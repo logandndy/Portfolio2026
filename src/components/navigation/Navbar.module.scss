@@ -1,0 +1,248 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// NAVBAR
+// ============================================================
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-navbar;
+  transition: background $transition-base, border-bottom $transition-base, backdrop-filter $transition-base;
+
+  &--scrolled {
+    background: rgba($color-bg-dark, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid $color-border;
+  }
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-4 $space-8;
+  gap: $space-6;
+
+  @include mobile {
+    padding: $space-4 $space-4;
+  }
+}
+
+// --- LOGO ---
+.navbar__logo {
+  font-family: $font-mono;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: opacity $transition-fast;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.navbar__logo-bracket {
+  color: $color-accent-cyan;
+  opacity: 0.7;
+}
+
+.navbar__logo-name {
+  color: $color-text-primary;
+  margin: 0 2px;
+}
+
+// --- NAV LINKS ---
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: $space-8;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.navbar__link {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  letter-spacing: 0.05em;
+  position: relative;
+  transition: color $transition-fast;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: $color-accent-cyan;
+    transition: width $transition-base;
+  }
+
+  &:hover {
+    color: $color-accent-cyan;
+
+    &::after {
+      width: 100%;
+    }
+  }
+}
+
+// --- ACTIONS ---
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+// --- LANG TOGGLE ---
+.navbar__lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  letter-spacing: 0.1em;
+  color: $color-text-muted;
+  padding: $space-1 $space-2;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.navbar__lang--active {
+  color: $color-accent-cyan;
+}
+
+.navbar__lang-sep {
+  color: $color-text-muted;
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+// --- CV BUTTON ---
+.navbar__cv-button {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-2 $space-4;
+  background: transparent;
+  border: 1px solid $color-border-active;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  color: $color-accent-cyan;
+  letter-spacing: 0.05em;
+  transition: background $transition-base, box-shadow $transition-base;
+
+  &:hover {
+    background: rgba($color-accent-cyan, 0.08);
+    box-shadow: 0 0 12px rgba($color-accent-cyan, 0.2);
+  }
+
+  @include tablet {
+    display: none;
+  }
+}
+
+// --- MOBILE TOGGLE ---
+.navbar__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $space-2;
+
+  @include tablet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.navbar__burger {
+  position: relative;
+  width: 22px;
+  height: 2px;
+  background: $color-text-primary;
+  transition: background $transition-fast;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: $color-text-primary;
+    transition: transform $transition-base, top $transition-base, bottom $transition-base;
+  }
+
+  &::before { top: -7px; }
+  &::after  { bottom: -7px; }
+
+  &--open {
+    background: transparent;
+
+    &::before {
+      top: 0;
+      transform: rotate(45deg);
+      background: $color-accent-cyan;
+    }
+
+    &::after {
+      bottom: 0;
+      transform: rotate(-45deg);
+      background: $color-accent-cyan;
+    }
+  }
+}
+
+// --- MOBILE MENU ---
+.navbar__mobile-menu {
+  display: none;
+  flex-direction: column;
+  padding: $space-4 $space-6 $space-6;
+  background: rgba($color-bg-dark, 0.97);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid $color-border;
+  gap: $space-4;
+
+  @include tablet {
+    display: flex;
+  }
+}
+
+.navbar__mobile-link {
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  letter-spacing: 0.05em;
+  padding: $space-3 0;
+  border-bottom: 1px solid $color-border;
+  transition: color $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    color: $color-accent-cyan;
+  }
+}

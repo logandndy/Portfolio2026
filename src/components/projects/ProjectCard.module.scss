@@ -1,0 +1,218 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// PROJECT CARD — Holographic tilt card
+// ============================================================
+
+.project-card-wrapper {
+  transform-style: preserve-3d;
+}
+
+.project-card {
+  position: relative;
+  @include glass-card;
+  padding: $space-8;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  cursor: default;
+  border-color: var(--project-accent, #{$color-border});
+  border-width: 1px;
+  border-style: solid;
+  opacity: 0.85;
+  transition: opacity $transition-base, box-shadow $transition-base;
+
+  // Dynamic glow on hover matching accent color
+  &:hover {
+    opacity: 1;
+    box-shadow:
+      0 0 20px rgba(var(--project-accent), 0.15),
+      0 20px 50px rgba(0, 0, 0, 0.4);
+  }
+}
+
+// --- CORNER CLIP ACCENT ---
+.project-card__corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  opacity: 0.7;
+}
+
+// --- HEADER ---
+.project-card__header {
+  margin-bottom: $space-6;
+}
+
+.project-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+}
+
+.project-card__index {
+  font-family: $font-mono;
+  font-size: $font-size-3xl;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0.2;
+  letter-spacing: -0.04em;
+}
+
+.project-card__year {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  letter-spacing: 0.15em;
+}
+
+.project-card__title {
+  font-family: $font-sans;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin-bottom: $space-4;
+  line-height: 1.2;
+}
+
+.project-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.project-card__tag {
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 3px $space-2;
+  border: 1px solid;
+  border-radius: $radius-sm;
+  text-transform: uppercase;
+}
+
+// --- BODY ---
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin-bottom: $space-6;
+}
+
+.project-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.project-card__field-label {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+}
+
+.project-card__field-text {
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+// --- STACK ---
+.project-card__stack {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin-bottom: $space-6;
+}
+
+.project-card__stack-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.project-card__stack-item {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: rgba($color-bg-surface, 0.8);
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  padding: 2px $space-3;
+
+  &::before {
+    content: '# ';
+    color: $color-text-muted;
+  }
+}
+
+// --- FOOTER ---
+.project-card__footer {
+  display: flex;
+  align-items: center;
+  gap: $space-6;
+  padding-top: $space-4;
+  border-top: 1px solid $color-border;
+}
+
+.project-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: opacity $transition-fast, gap $transition-fast;
+
+  &:hover {
+    opacity: 0.75;
+
+    .project-card__link-arrow {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.project-card__link-arrow {
+  display: inline-block;
+  transition: transform $transition-fast;
+}
+
+.project-card__link--disabled {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  font-style: italic;
+}
+
+// --- HOLOGRAPHIC SHIMMER ---
+.project-card__holo-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity $transition-base;
+
+  .project-card:hover & {
+    opacity: 1;
+  }
+}

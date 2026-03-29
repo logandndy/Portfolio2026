@@ -1,0 +1,238 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// SKILL TREE — RPG Style
+// ============================================================
+
+.skills-section {
+  position: relative;
+  background: $color-bg-deep;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      $color-accent-cyan,
+      $color-accent-violet,
+      transparent
+    );
+    opacity: 0.4;
+  }
+}
+
+.skills-section__inner {
+  @include section-layout;
+  position: relative;
+}
+
+.skills-section__header {
+  margin-bottom: $space-16;
+}
+
+.skills-section__eyebrow {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-accent-violet;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: $space-3;
+}
+
+.skills-section__title {
+  font-family: $font-sans;
+  font-size: clamp(#{$font-size-2xl}, 5vw, #{$font-size-4xl});
+  font-weight: 800;
+  color: $color-text-primary;
+  margin-bottom: $space-4;
+}
+
+.skills-section__subtitle {
+  font-family: $font-sans;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  max-width: 500px;
+}
+
+// --- TREE LAYOUT ---
+.skill-tree {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-8;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+// --- CATEGORY ---
+.skill-category {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.skill-category__header {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-2;
+}
+
+.skill-category__label {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+  white-space: nowrap;
+}
+
+.skill-category__line {
+  flex: 1;
+  height: 1px;
+  background: $color-border;
+}
+
+.skill-category__nodes {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+// --- SKILL NODE ---
+.skill-node {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  background: $color-bg-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  cursor: default;
+  transition:
+    border-color $transition-base,
+    background $transition-base,
+    box-shadow $transition-base,
+    transform $transition-fast;
+
+  &--hovered,
+  &:hover {
+    background: $color-bg-card-hover;
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(var(--skill-color, 0, 212, 255), 0.15);
+  }
+}
+
+.skill-node__icon {
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  font-weight: 700;
+  width: 32px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.skill-node__name {
+  flex: 1;
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text-primary;
+}
+
+.skill-node__level {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.skill-node__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $color-bg-surface;
+  border: 1px solid $color-border;
+
+  &--filled {
+    border-color: transparent;
+    box-shadow: 0 0 4px currentColor;
+  }
+}
+
+// --- TOOLTIP ---
+.skill-tooltip {
+  position: fixed;
+  bottom: $space-8;
+  right: $space-8;
+  @include glass-card;
+  padding: $space-4 $space-6;
+  max-width: 280px;
+  z-index: $z-toast;
+
+  @include mobile {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    max-width: 100%;
+    margin-top: $space-6;
+  }
+}
+
+.skill-tooltip__name {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  font-weight: 700;
+  margin-bottom: $space-2;
+}
+
+.skill-tooltip__desc {
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $space-4;
+}
+
+.skill-tooltip__level {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.skill-tooltip__level-label {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.skill-tooltip__level-bar {
+  display: flex;
+  gap: $space-1;
+}
+
+.skill-tooltip__level-pip {
+  width: 20px;
+  height: 4px;
+  border-radius: 2px;
+  background: $color-bg-surface;
+  border: 1px solid $color-border;
+
+  &--filled {
+    border-color: transparent;
+  }
+}

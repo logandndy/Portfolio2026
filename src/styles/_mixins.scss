@@ -1,0 +1,92 @@
+@use './variables' as *;
+
+// --- RESPONSIVE BREAKPOINTS ---
+@mixin mobile {
+  @media (max-width: 640px) { @content; }
+}
+@mixin tablet {
+  @media (max-width: 1024px) { @content; }
+}
+@mixin desktop {
+  @media (min-width: 1025px) { @content; }
+}
+
+// --- NEON BORDER ---
+@mixin neon-border($color: $color-accent-cyan) {
+  border: 1px solid rgba($color, 0.4);
+  box-shadow: 0 0 8px rgba($color, 0.2), inset 0 0 8px rgba($color, 0.05);
+}
+
+// --- NEON TEXT ---
+@mixin neon-text($color: $color-accent-cyan) {
+  color: $color;
+  text-shadow: 0 0 10px rgba($color, 0.8), 0 0 30px rgba($color, 0.4);
+}
+
+// --- GLASSMORPHISM CARD ---
+@mixin glass-card {
+  background: rgba($color-bg-card, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: $border-thin;
+  border-radius: $radius-lg;
+}
+
+// --- SCANLINE OVERLAY ---
+@mixin scanlines {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: $z-overlay;
+  }
+}
+
+// --- CYBER CLIP PATH ---
+@mixin cyber-clip {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+// --- FLEX CENTER ---
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// --- SECTION LAYOUT ---
+@mixin section-layout {
+  width: 100%;
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $section-padding $space-8;
+
+  @include mobile {
+    padding: $space-12 $space-4;
+  }
+}
+
+// --- GRADIENT TEXT ---
+@mixin gradient-text($from: $color-accent-cyan, $to: $color-accent-violet) {
+  background: linear-gradient(135deg, $from, $to);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// --- HOVER LIFT ---
+@mixin hover-lift {
+  transition: transform $transition-base, box-shadow $transition-base;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 212, 255, 0.15);
+  }
+}

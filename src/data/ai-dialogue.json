@@ -1,0 +1,126 @@
+{
+  "version": "2.7",
+  "botName": "CORPO-BOT",
+  "responses": {
+    "availability_fr": {
+      "questionKey": "Quelles sont tes disponibilités ?",
+      "lines": [
+        "Analyse du calendrier en cours...",
+        "Je suis actuellement disponible pour de nouvelles opportunités.",
+        "Je peux commencer sur un préavis court — généralement 2 à 4 semaines.",
+        "Je suis ouvert aux postes en CDI, CDD ou mission freelance.",
+        "Localisation flexible : télétravail total, hybride, ou présentiel selon la ville."
+      ]
+    },
+    "availability_en": {
+      "questionKey": "What is your availability?",
+      "lines": [
+        "Scanning calendar...",
+        "I am currently available for new opportunities.",
+        "I can start on short notice — typically 2 to 4 weeks.",
+        "Open to permanent, contract, or freelance positions.",
+        "Location-flexible: full remote, hybrid, or on-site depending on the city."
+      ]
+    },
+    "why_hire_fr": {
+      "questionKey": "Pourquoi devrais-je t'embaucher ?",
+      "lines": [
+        "Requête légitime. Voici ma réponse directe :",
+        "Je maîtrise le spectre complet : logique backend robuste ET expériences frontend mémorables.",
+        "Je ne code pas juste pour que ça marche — je code pour que ça soit maintenable et élégant.",
+        "Je suis autonome, curieux, et je livrerai plus que ce qui est demandé.",
+        "Cerise sur le gâteau : je construis des moteurs 3D pour le fun. Votre prochain projet ne m'effraiera pas."
+      ]
+    },
+    "why_hire_en": {
+      "questionKey": "Why should I hire you?",
+      "lines": [
+        "Legitimate query. Here is my direct answer:",
+        "I master the full spectrum: robust backend logic AND memorable frontend experiences.",
+        "I don't just code for it to work — I code for it to be maintainable and elegant.",
+        "I'm autonomous, curious, and will deliver beyond what's asked.",
+        "Bonus: I build 3D engines for fun. Your next project won't intimidate me."
+      ]
+    },
+    "stack_fr": {
+      "questionKey": "Quelle est ta stack préférée ?",
+      "lines": [
+        "Chargement des préférences techniques...",
+        "Pour le web : Next.js + TypeScript côté full-stack, SCSS pour le style.",
+        "Pour les expériences riches : React Three Fiber + GSAP.",
+        "Pour le backend pur : Node.js ou Java selon la contrainte de performance.",
+        "J'adopte la stack qui résout le problème, pas la stack à la mode."
+      ]
+    },
+    "stack_en": {
+      "questionKey": "What is your favourite stack?",
+      "lines": [
+        "Loading technical preferences...",
+        "For the web: Next.js + TypeScript full-stack, SCSS for styling.",
+        "For rich experiences: React Three Fiber + GSAP.",
+        "For pure backend: Node.js or Java depending on performance constraints.",
+        "I adopt the stack that solves the problem, not the trendy one."
+      ]
+    },
+    "remote_fr": {
+      "questionKey": "Tu travailles en remote ?",
+      "lines": [
+        "Paramètre de localisation : FLEXIBLE.",
+        "Oui, le télétravail total est ma configuration préférée pour la productivité.",
+        "Je suis également à l'aise en hybride — quelques jours au bureau ne me font pas peur.",
+        "J'ai les outils, la discipline et la communication asynchrone pour que ça fonctionne.",
+        "Fuseau horaire : Europe (CET/CEST). Compatible France, Suisse, Canada."
+      ]
+    },
+    "remote_en": {
+      "questionKey": "Do you work remotely?",
+      "lines": [
+        "Location parameter: FLEXIBLE.",
+        "Yes, full remote is my preferred configuration for productivity.",
+        "I'm also comfortable with hybrid — a few days in the office is fine.",
+        "I have the tools, discipline and async communication skills to make it work.",
+        "Timezone: Europe (CET/CEST). Compatible with France, Switzerland, Canada."
+      ]
+    },
+    "ambitious_project_fr": {
+      "questionKey": "Parle-moi de ton projet le plus ambitieux.",
+      "lines": [
+        "Fichier classifié en cours d'ouverture...",
+        "Mon projet le plus ambitieux : un moteur de jeu 3D en Java from scratch.",
+        "Gestion de scènes hiérarchiques, physique, rendu, UI 3D avec Lemur.",
+        "Ce projet m'a appris que les meilleures abstractions sont celles qu'on comprend entièrement.",
+        "Et accessoirement, il m'a donné le goût des défis techniques que personne ne considère 'raisonnables'."
+      ]
+    },
+    "ambitious_project_en": {
+      "questionKey": "Tell me about your most ambitious project.",
+      "lines": [
+        "Opening classified file...",
+        "My most ambitious project: a 3D game engine in Java from scratch.",
+        "Hierarchical scene management, physics, rendering, 3D UI with Lemur.",
+        "This project taught me that the best abstractions are the ones you fully understand.",
+        "And incidentally, it gave me a taste for technical challenges nobody considers 'reasonable'."
+      ]
+    },
+    "salary_fr": {
+      "questionKey": "Quelles sont tes prétentions salariales ?",
+      "lines": [
+        "Données salariales : CONFIDENTIEL.",
+        "Je préfère discuter de ce point lors d'un premier échange direct.",
+        "Ce que je peux dire : mes attentes correspondent au marché senior pour mon profil.",
+        "La rémunération globale m'importe (salaire fixe + variable + avantages).",
+        "Envoyez-moi un message via le formulaire de contact pour en discuter."
+      ]
+    },
+    "salary_en": {
+      "questionKey": "What are your salary expectations?",
+      "lines": [
+        "Salary data: CONFIDENTIAL.",
+        "I prefer to discuss this point during a first direct exchange.",
+        "What I can say: my expectations match the senior market for my profile.",
+        "Total compensation matters to me (base + bonus + benefits).",
+        "Send me a message via the contact form to discuss."
+      ]
+    }
+  }
+}

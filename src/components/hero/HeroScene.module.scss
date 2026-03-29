@@ -1,0 +1,239 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+@use '../../styles/animations';
+
+// ============================================================
+// HERO SECTION
+// ============================================================
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  min-height: 600px;
+  overflow: hidden;
+  background: $color-bg-deep;
+}
+
+// --- 3D CANVAS ---
+.hero-canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: $z-base;
+  cursor: crosshair;
+
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+// --- OVERLAY ---
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: $z-overlay;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: $space-8 clamp(#{$space-8}, 8vw, #{$space-24});
+  pointer-events: none;
+
+  // Gradient to push text to the left while the 3D scene breathes
+  background: linear-gradient(
+    90deg,
+    rgba($color-bg-deep, 0.75) 0%,
+    rgba($color-bg-deep, 0.4) 50%,
+    transparent 100%
+  );
+
+  @include mobile {
+    padding: $space-8 $space-6;
+    background: rgba($color-bg-deep, 0.65);
+  }
+
+  // Re-enable pointer events on interactive elements
+  button, a {
+    pointer-events: auto;
+  }
+}
+
+// --- STATUS BADGE ---
+.hero-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-6;
+  padding: $space-2 $space-4;
+  background: rgba($color-accent-green, 0.08);
+  border: 1px solid rgba($color-accent-green, 0.25);
+  border-radius: 100px;
+  width: fit-content;
+}
+
+.hero-status-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-accent-green;
+  box-shadow: 0 0 8px $color-accent-green;
+  flex-shrink: 0;
+}
+
+.hero-status-badge__text {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: $color-accent-green;
+}
+
+// --- EYEBROW ---
+.hero-eyebrow {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-accent-cyan;
+  letter-spacing: 0.15em;
+  margin-bottom: $space-4;
+  opacity: 0.9;
+}
+
+// --- TITLE ---
+.hero-title {
+  font-family: $font-sans;
+  font-size: clamp(#{$font-size-2xl}, 6vw, #{$font-size-5xl});
+  font-weight: 800;
+  color: $color-text-primary;
+  line-height: 1.05;
+  margin-bottom: $space-3;
+  letter-spacing: -0.03em;
+}
+
+.hero-title__name {
+  @include gradient-text($color-accent-cyan, $color-accent-violet);
+  display: block;
+}
+
+// --- ROLE ---
+.hero-role {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.hero-role__bracket {
+  font-family: $font-mono;
+  font-size: $font-size-xl;
+  color: $color-accent-violet;
+  opacity: 0.7;
+}
+
+.hero-role__text {
+  font-family: $font-mono;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  letter-spacing: 0.05em;
+}
+
+// --- TAGLINE ---
+.hero-tagline {
+  font-family: $font-sans;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: $space-10;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+// --- CTAs ---
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  flex-wrap: wrap;
+}
+
+.hero-cta-button--primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4 $space-8;
+  background: linear-gradient(135deg, $color-accent-cyan, $color-accent-violet);
+  border: none;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-bg-deep;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  @include cyber-clip;
+  transition: transform $transition-base, box-shadow $transition-base, filter $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.hero-cta-button__arrow {
+  transition: transform $transition-fast;
+
+  .hero-cta-button--primary:hover & {
+    transform: translateX(4px);
+  }
+}
+
+.hero-cta-button--secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-4 $space-8;
+  background: transparent;
+  border: 1px solid $color-border-active;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text-primary;
+  letter-spacing: 0.05em;
+  transition: background $transition-base, border-color $transition-base, box-shadow $transition-base;
+
+  &:hover {
+    background: rgba(0, 212, 255, 0.07);
+    border-color: $color-accent-cyan;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+  }
+}
+
+// --- SCROLL HINT ---
+.hero-scroll-hint {
+  position: absolute;
+  bottom: $space-8;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  z-index: $z-overlay;
+}
+
+.hero-scroll-hint__text {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  letter-spacing: 0.15em;
+}
+
+.hero-scroll-hint__arrow {
+  font-size: $font-size-lg;
+  color: $color-accent-cyan;
+  animation: float 2s ease-in-out infinite;
+}

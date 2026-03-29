@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets",
+    "skills": "Compétences",
+    "contact": "Contact",
+    "downloadCV": "Télécharger CV"
+  },
+  "hero": {
+    "eyebrow": "Disponible pour de nouvelles opportunités",
+    "greeting": "Bonjour, je suis",
+    "name": "Logan Dandy",
+    "role": "Software Engineer",
+    "tagline": "De la logique Backend aux Expériences Interactives",
+    "cta_projects": "Voir mes projets",
+    "cta_contact": "Me contacter",
+    "scroll_hint": "Cliquer sur le bureau pour explorer",
+    "status_online": "EN LIGNE",
+    "status_available": "DISPONIBLE"
+  },
+  "projects": {
+    "eyebrow": "Portfolio",
+    "title": "Projets Phares",
+    "subtitle": "Chaque projet est une solution à un problème réel.",
+    "problem": "Problème",
+    "solution": "Solution",
+    "stack": "Stack",
+    "viewCode": "Code Source",
+    "viewLive": "Voir en live",
+    "noLive": "Non déployé"
+  },
+  "skills": {
+    "eyebrow": "Compétences",
+    "title": "Arbre de Compétences",
+    "subtitle": "Un parcours du backend robuste aux interfaces interactives.",
+    "level": "Niveau",
+    "maxLevel": "Max",
+    "categories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "3d_game": "3D & Jeu",
+      "tools": "Outils"
+    }
+  },
+  "chatbot": {
+    "title": "Assistant IA",
+    "subtitle": "CORPO-BOT v2.7",
+    "placeholder": "Sélectionnez une question...",
+    "greeting": "Bonjour. Je suis l'assistant virtuel de Logan. Posez-moi une question.",
+    "thinking": "Traitement en cours...",
+    "questions": [
+      "Quelles sont tes disponibilités ?",
+      "Pourquoi devrais-je t'embaucher ?",
+      "Quelle est ta stack préférée ?",
+      "Tu travailles en remote ?",
+      "Parle-moi de ton projet le plus ambitieux.",
+      "Quelles sont tes prétentions salariales ?"
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Travaillons Ensemble",
+    "subtitle": "Ouvert aux opportunités en CDI, CDD et freelance.",
+    "name_label": "Nom",
+    "name_placeholder": "Votre nom complet",
+    "email_label": "Email",
+    "email_placeholder": "votre@email.com",
+    "message_label": "Message",
+    "message_placeholder": "Décrivez votre projet ou opportunité...",
+    "send_button": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "success": "Message envoyé ! Je vous réponds sous 24h.",
+    "error": "Erreur lors de l'envoi. Réessayez.",
+    "or_reach": "Ou directement :",
+    "download_cv": "Télécharger mon CV (PDF)"
+  },
+  "easter_egg": {
+    "title": "// ACCÈS DÉBLOQUÉ",
+    "subtitle": "Vous avez trouvé le code secret.",
+    "message": "Bravo. Ce niveau de curiosité est exactement ce que je cherche dans une équipe. CV spécial débloqué.",
+    "download": "Télécharger le CV Débloqué"
+  },
+  "footer": {
+    "built_with": "Construit avec",
+    "and": "et",
+    "rights": "Tous droits réservés.",
+    "made_by": "Conçu & développé par Logan Dandy"
+  }
+}

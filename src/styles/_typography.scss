@@ -1,0 +1,49 @@
+@use 'variables' as *;
+
+// --- BASE TYPOGRAPHY RULES ---
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-sans;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: $color-text-primary;
+}
+
+p, li, span, a, input, textarea {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: $color-text-secondary;
+}
+
+code, pre, kbd, .mono {
+  font-family: $font-mono;
+}
+
+// --- SECTION TITLE SYSTEM ---
+.section-eyebrow {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $color-accent-cyan;
+  margin-bottom: $space-3;
+}
+
+.section-title {
+  font-family: $font-sans;
+  font-size: clamp(#{$font-size-2xl}, 5vw, #{$font-size-4xl});
+  font-weight: 800;
+  color: $color-text-primary;
+  margin-bottom: $space-6;
+}
+
+.section-subtitle {
+  font-family: $font-sans;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  max-width: 560px;
+  line-height: 1.7;
+}

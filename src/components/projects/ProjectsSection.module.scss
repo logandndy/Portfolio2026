@@ -1,0 +1,72 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+@use '../../styles/animations';
+
+// ============================================================
+// PROJECTS SECTION
+// ============================================================
+
+.projects-section {
+  position: relative;
+  background: $color-bg-dark;
+  overflow: hidden;
+
+  &__scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.04) 3px,
+      rgba(0, 0, 0, 0.04) 6px
+    );
+    z-index: $z-base;
+  }
+}
+
+.projects-section__inner {
+  @include section-layout;
+  position: relative;
+  z-index: $z-overlay;
+}
+
+.projects-section__header {
+  margin-bottom: $space-16;
+}
+
+.projects-section__eyebrow {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-accent-cyan;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: $space-3;
+}
+
+.projects-section__title {
+  font-family: $font-sans;
+  font-size: clamp(#{$font-size-2xl}, 5vw, #{$font-size-4xl});
+  font-weight: 800;
+  color: $color-text-primary;
+  margin-bottom: $space-4;
+}
+
+.projects-section__subtitle {
+  font-family: $font-sans;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  max-width: 500px;
+}
+
+// --- GRID ---
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-6;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}

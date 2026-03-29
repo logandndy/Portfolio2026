@@ -1,0 +1,146 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// EASTER EGG — Neon confetti modal
+// ============================================================
+
+.easter-egg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  background: rgba($color-bg-deep, 0.92);
+  @include flex-center;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.easter-egg-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-particle {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+}
+
+// --- MODAL ---
+.easter-egg-modal {
+  position: relative;
+  z-index: $z-modal + 1;
+  @include glass-card;
+  padding: $space-10 $space-12;
+  max-width: 540px;
+  width: calc(100% - #{$space-8});
+  cursor: default;
+  border-color: rgba($color-accent-violet, 0.5);
+  box-shadow: 0 0 40px rgba($color-accent-violet, 0.2), 0 0 100px rgba($color-accent-cyan, 0.1);
+  text-align: center;
+}
+
+.easter-egg-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-6;
+}
+
+.easter-egg-modal__code {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  letter-spacing: 0.2em;
+}
+
+.easter-egg-modal__code-value {
+  color: $color-accent-green;
+  text-shadow: 0 0 10px $color-accent-green;
+}
+
+.easter-egg-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.easter-egg-modal__title {
+  font-family: $font-mono;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  @include neon-text($color-accent-cyan);
+  margin-bottom: $space-2;
+}
+
+.easter-egg-modal__subtitle {
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  color: $color-accent-violet;
+  margin-bottom: $space-6;
+  letter-spacing: 0.05em;
+}
+
+.easter-egg-modal__message {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  line-height: 1.7;
+  margin-bottom: $space-10;
+}
+
+.easter-egg-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  flex-wrap: wrap;
+}
+
+.easter-egg-modal__download {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-4 $space-8;
+  background: linear-gradient(135deg, $color-accent-cyan, $color-accent-violet);
+  border-radius: $radius-sm;
+  @include cyber-clip;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $color-bg-deep;
+  letter-spacing: 0.05em;
+  transition: transform $transition-fast, box-shadow $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba($color-accent-cyan, 0.4);
+  }
+}
+
+.easter-egg-modal__close-btn {
+  padding: $space-4 $space-6;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: border-color $transition-fast, color $transition-fast;
+
+  &:hover {
+    border-color: $color-text-secondary;
+    color: $color-text-primary;
+  }
+}
