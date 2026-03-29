@@ -8,6 +8,8 @@
 .contact-section {
   background: $color-bg-dark;
   position: relative;
+  height: 100dvh;
+  overflow-y: auto;
 
   &::before {
     content: '';

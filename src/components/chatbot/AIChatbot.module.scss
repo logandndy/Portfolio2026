@@ -3,10 +3,10 @@
 @use '../../styles/animations';
 
 // ============================================================
-// AI CHATBOT — Persistent terminal widget
+// AI CHATBOT — Centered modal with particle assembly
 // ============================================================
 
-// --- TOGGLE BUTTON ---
+// --- FLOATING TOGGLE (bottom-right) ---
 .chatbot-toggle {
   position: fixed;
   bottom: $space-8;
@@ -52,14 +52,40 @@
   }
 }
 
-// --- CHAT WINDOW ---
-.chatbot-window {
+// --- FULL-SCREEN OVERLAY ---
+.chatbot-overlay {
   position: fixed;
-  bottom: calc(#{$space-8} + 60px);
-  right: $space-8;
-  z-index: $z-chatbot;
-  width: 380px;
-  max-height: 560px;
+  inset: 0;
+  z-index: $z-chatbot + 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Dark backdrop
+.chatbot-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba($color-bg-deep, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+// Canvas for particle animation — sits above backdrop, below window
+.chatbot-particle-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+// --- CENTERED CHAT WINDOW ---
+.chatbot-window {
+  position: relative;
+  z-index: 2;
+  width: min(560px, 90vw);
+  max-height: min(680px, 84dvh);
   display: flex;
   flex-direction: column;
   @include glass-card;
@@ -67,10 +93,7 @@
   overflow: hidden;
 
   @include mobile {
-    width: calc(100vw - #{$space-8});
-    right: $space-4;
-    bottom: calc(#{$space-4} + 60px);
-    max-height: 480px;
+    max-height: 86dvh;
   }
 }
 
@@ -82,6 +105,7 @@
   padding: $space-3 $space-4;
   border-bottom: 1px solid $color-border;
   background: rgba($color-bg-surface, 0.5);
+  flex-shrink: 0;
 }
 
 .chatbot-header__info {
@@ -114,10 +138,13 @@
   font-family: $font-mono;
   font-size: $font-size-sm;
   color: $color-text-muted;
-  transition: color $transition-fast;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  transition: color $transition-fast, background $transition-fast;
 
   &:hover {
     color: $color-text-primary;
+    background: rgba($color-text-primary, 0.06);
   }
 }
 
@@ -174,11 +201,12 @@
   margin-left: 1px;
 }
 
-// --- QUESTIONS ---
+// --- QUICK QUESTIONS ---
 .chatbot-questions {
   border-top: 1px solid $color-border;
   padding: $space-3 $space-4;
   background: rgba($color-bg-surface, 0.3);
+  flex-shrink: 0;
 }
 
 .chatbot-questions__label {
@@ -194,7 +222,7 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  max-height: 140px;
+  max-height: 160px;
   overflow-y: auto;
 }
 
@@ -208,7 +236,8 @@
   font-size: 0.65rem;
   color: $color-text-secondary;
   cursor: pointer;
-  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+  transition: background $transition-fast, color $transition-fast,
+    border-color $transition-fast;
 
   &:hover:not(:disabled) {
     background: rgba($color-accent-cyan, 0.07);

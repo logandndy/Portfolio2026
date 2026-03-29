@@ -7,6 +7,8 @@
 
 .skills-section {
   position: relative;
+  height: 100dvh;
+  overflow-y: auto;
   background: $color-bg-deep;
   overflow: hidden;
 
