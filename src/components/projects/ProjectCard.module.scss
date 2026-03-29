@@ -6,7 +6,7 @@
 // ============================================================
 
 .project-card-wrapper {
-  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .project-card {
@@ -14,8 +14,8 @@
   @include glass-card;
   padding: $space-8;
   overflow: hidden;
-  transform-style: preserve-3d;
   cursor: default;
+  will-change: transform;
   border-color: var(--project-accent, #{$color-border});
   border-width: 1px;
   border-style: solid;

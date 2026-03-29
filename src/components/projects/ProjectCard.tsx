@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
+import gsap from "gsap";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
 import type { Project } from "@/data/projects";
@@ -24,31 +25,20 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Mouse tilt effect — holographic feel
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
-    stiffness: 150,
-    damping: 20,
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
-    stiffness: 150,
-    damping: 20,
-  });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
+  const handleMouseEnter = () => {
+    gsap.to(cardRef.current, {
+      y: -6,
+      duration: 0.3,
+      ease: "power2.out",
+    });
   };
 
   const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
+    gsap.to(cardRef.current, {
+      y: 0,
+      duration: 0.4,
+      ease: "power2.out",
+    });
   };
 
   const title = lang === "fr" ? project.titleFr : project.titleEn;
@@ -65,21 +55,15 @@ export default function ProjectCard({
         delay: index * 0.12,
         ease: [0.16, 1, 0.3, 1],
       }}
-      style={{ perspective: 1000 }}
     >
-      <motion.div
+      <div
         ref={cardRef}
         className={styles["project-card"]}
-        style={{
-          rotateX,
-          rotateY,
-          // Dynamic border glow based on project accent color
-          "--project-accent": project.accentColor,
-        } as React.CSSProperties}
-        onMouseMove={handleMouseMove}
+        style={{ "--project-accent": project.accentColor } as React.CSSProperties}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Corner accent — cyber clip */}
+        {/* Corner accent */}
         <div
           className={styles["project-card__corner"]}
           style={{ background: project.accentColor }}
@@ -98,7 +82,6 @@ export default function ProjectCard({
           </div>
           <h3 className={styles["project-card__title"]}>{title}</h3>
 
-          {/* Tags */}
           <div className={styles["project-card__tags"]}>
             {project.tags.map((tag) => (
               <span
@@ -179,7 +162,7 @@ export default function ProjectCard({
 
         {/* Holographic shimmer overlay */}
         <div className={styles["project-card__holo-overlay"]} aria-hidden />
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

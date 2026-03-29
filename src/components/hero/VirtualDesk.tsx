@@ -10,6 +10,8 @@ import type { Lang } from "@/types";
 
 interface VirtualDeskProps {
   onDeskClick: () => void;
+  onSkillsClick: () => void;
+  onContactClick: () => void;
   isClicked: boolean;
   cameraTarget: "overview" | "desk" | "projects";
   lang: Lang;
@@ -57,19 +59,46 @@ function HoloFolder({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const hovered = useRef(false);
 
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      const mat = meshRef.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = hovered.current
+        ? 1.4 + Math.sin(state.clock.elapsedTime * 3) * 0.2
+        : 0.6;
     }
     if (glowRef.current) {
-      const s = 1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+      const s = hovered.current
+        ? 1.3 + Math.sin(state.clock.elapsedTime * 2) * 0.08
+        : 1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
       glowRef.current.scale.setScalar(s);
+      const mat = glowRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = hovered.current ? 0.12 : 0.04;
+    }
+    if (groupRef.current) {
+      const targetY = hovered.current ? 0.12 : 0;
+      groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.1;
     }
   });
 
   return (
-    <group position={position} onClick={onClick}>
+    <group
+      ref={groupRef}
+      position={position}
+      onClick={onClick}
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+        hovered.current = true;
+        document.body.style.cursor = onClick ? "pointer" : "default";
+      }}
+      onPointerLeave={() => {
+        hovered.current = false;
+        document.body.style.cursor = "auto";
+      }}
+    >
       {/* Outer glow sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[0.38, 16, 16]} />
@@ -250,6 +279,8 @@ function HoloMonitor() {
 
 export default function VirtualDesk({
   onDeskClick,
+  onSkillsClick,
+  onContactClick,
   isClicked,
   cameraTarget,
   lang,
@@ -296,11 +327,13 @@ export default function VirtualDesk({
         position={[0, -0.4, 0.6]}
         color="#9b5de5"
         label={skillsLabel}
+        onClick={onSkillsClick}
       />
       <HoloFolder
         position={[1.6, -0.4, 0.3]}
         color="#ff6b2b"
         label={contactLabel}
+        onClick={onContactClick}
       />
 
       {/* Floating accent ring */}

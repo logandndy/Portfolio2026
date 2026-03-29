@@ -52,7 +52,7 @@ export default function ContactSection({ dict, lang }: ContactSectionProps) {
           transition={{ duration: 0.8 }}
         >
           <p className={styles["contact-section__eyebrow"]}>
-            // {dict.contact.eyebrow}
+           {dict.contact.eyebrow}
           </p>
           <h2 className={styles["contact-section__title"]}>
             {dict.contact.title}

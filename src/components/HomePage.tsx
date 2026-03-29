@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useEasterEgg } from "@/hooks/useEasterEgg";
 import { getDictionary } from "@/lib/i18n";
@@ -19,8 +20,9 @@ interface HomePageProps {
 }
 
 export default function HomePage({ dict: initialDict, lang: initialLang }: HomePageProps) {
-  const { lang, toggle, switchTo } = useLanguage(initialLang);
+  const { lang, toggle } = useLanguage(initialLang);
   const { isTriggered: easterEggTriggered, reset: resetEasterEgg } = useEasterEgg();
+  const [chatbotTrigger, setChatbotTrigger] = useState(0);
 
   const dict = getDictionary(lang);
 
@@ -29,13 +31,17 @@ export default function HomePage({ dict: initialDict, lang: initialLang }: HomeP
       <Navbar dict={dict} lang={lang} onToggleLang={toggle} />
 
       <main>
-        <HeroScene dict={dict} lang={lang} />
+        <HeroScene
+          dict={dict}
+          lang={lang}
+          onChatOpen={() => setChatbotTrigger((t) => t + 1)}
+        />
         <ProjectsSection dict={dict} lang={lang} />
         <SkillTree dict={dict} lang={lang} />
         <ContactSection dict={dict} lang={lang} />
       </main>
 
-      <AIChatbot dict={dict} lang={lang} />
+      <AIChatbot dict={dict} lang={lang} openTrigger={chatbotTrigger} />
 
       {easterEggTriggered && (
         <EasterEgg dict={dict} lang={lang} onClose={resetEasterEgg} />

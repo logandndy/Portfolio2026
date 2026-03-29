@@ -12,6 +12,7 @@ interface HeroOverlayProps {
   lang: Lang;
   isDeskClicked: boolean;
   onExploreClick: () => void;
+  onChatOpen: () => void;
 }
 
 const fadeUp: Variants = {
@@ -28,6 +29,7 @@ export default function HeroOverlay({
   lang,
   isDeskClicked,
   onExploreClick,
+  onChatOpen,
 }: HeroOverlayProps) {
   const statusRef = useRef<HTMLSpanElement>(null);
 
@@ -126,6 +128,13 @@ export default function HeroOverlay({
         >
           {dict.hero.cta_contact}
         </a>
+        <button
+          className={styles["hero-cta-button--chat"]}
+          onClick={onChatOpen}
+        >
+          <span>&gt;_</span>
+          <span>{dict.hero.cta_chat}</span>
+        </button>
       </motion.div>
     </div>
   );

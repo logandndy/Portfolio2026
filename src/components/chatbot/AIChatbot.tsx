@@ -11,6 +11,7 @@ import styles from "./AIChatbot.module.scss";
 interface AIChatbotProps {
   dict: Dictionary;
   lang: Lang;
+  openTrigger?: number;
 }
 
 interface ChatMessage {
@@ -19,7 +20,7 @@ interface ChatMessage {
   text: string;
 }
 
-export default function AIChatbot({ dict, lang }: AIChatbotProps) {
+export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -31,6 +32,10 @@ export default function AIChatbot({ dict, lang }: AIChatbotProps) {
   const [activeLines, setActiveLines] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (openTrigger > 0) setIsOpen(true);
+  }, [openTrigger]);
 
   const { displayedLines, currentLine, isDone } = useTypewriter(activeLines, {
     speed: 22,
