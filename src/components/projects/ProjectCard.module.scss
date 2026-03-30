@@ -2,36 +2,40 @@
 @use '../../styles/mixins' as *;
 
 // ============================================================
-// PROJECT CARD — Holographic tilt card
+// PROJECT CARD — full-height carousel card, 2-col on desktop
 // ============================================================
-
-.project-card-wrapper {
-  will-change: transform;
-}
 
 .project-card {
   position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   @include glass-card;
-  padding: $space-8;
+  padding: $space-5;
   overflow: hidden;
-  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
   will-change: transform;
   border-color: var(--project-accent, #{$color-border});
   border-width: 1px;
   border-style: solid;
-  opacity: 0.85;
-  transition: opacity $transition-base, box-shadow $transition-base;
+  transition: box-shadow $transition-base;
 
-  // Dynamic glow on hover matching accent color
+  @include desktop {
+    padding: $space-8 $space-10;
+    gap: $space-5;
+  }
+
   &:hover {
-    opacity: 1;
     box-shadow:
-      0 0 20px rgba(var(--project-accent), 0.15),
-      0 20px 50px rgba(0, 0, 0, 0.4);
+      0 0 0 1px var(--project-accent-faint),
+      0 28px 70px rgba(0, 0, 0, 0.55);
   }
 }
 
-// --- CORNER CLIP ACCENT ---
+// ---- CORNER CUT ----
 .project-card__corner {
   position: absolute;
   top: 0;
@@ -42,41 +46,50 @@
   opacity: 0.7;
 }
 
-// --- HEADER ---
-.project-card__header {
-  margin-bottom: $space-6;
+// ---- GHOST WATERMARK ----
+.project-card__ghost {
+  position: absolute;
+  right: -0.05em;
+  bottom: -0.12em;
+  font-family: $font-mono;
+  font-size: clamp(8rem, 22vw, 16rem);
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+  z-index: 0;
 }
 
-.project-card__meta {
+// ---- TOP META ROW ----
+.project-card__top {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: $space-3;
+  flex-wrap: wrap;
+  gap: $space-3;
+  flex-shrink: 0;
 }
 
 .project-card__index {
   font-family: $font-mono;
-  font-size: $font-size-3xl;
+  font-size: $font-size-2xl;
   font-weight: 800;
   line-height: 1;
-  opacity: 0.2;
+  opacity: 0.22;
   letter-spacing: -0.04em;
+  flex-shrink: 0;
 }
 
 .project-card__year {
   font-family: $font-mono;
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-muted;
   letter-spacing: 0.15em;
-}
-
-.project-card__title {
-  font-family: $font-sans;
-  font-size: $font-size-xl;
-  font-weight: 700;
-  color: $color-text-primary;
-  margin-bottom: $space-4;
-  line-height: 1.2;
+  flex-shrink: 0;
 }
 
 .project-card__tags {
@@ -87,51 +100,120 @@
 
 .project-card__tag {
   font-family: $font-mono;
-  font-size: 0.65rem;
+  font-size: $font-size-xs;
   font-weight: 500;
   letter-spacing: 0.1em;
-  padding: 3px $space-2;
+  padding: 3px $space-3;
   border: 1px solid;
   border-radius: $radius-sm;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-// --- BODY ---
+// ---- TITLE BLOCK ----
+.project-card__title-block {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.project-card__title {
+  font-family: $font-sans;
+  font-size: clamp(1.75rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  color: $color-text-primary;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.project-card__title-bar {
+  width: 48px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+// ---- BODY (2-col on desktop) ----
 .project-card__body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  overflow: hidden;
+
+  @include desktop {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: $space-10;
+  }
+}
+
+// ---- LEFT: problem + solution ----
+.project-card__text {
   display: flex;
   flex-direction: column;
   gap: $space-4;
-  margin-bottom: $space-6;
+
+  @include desktop {
+    flex: 3;
+  }
 }
 
 .project-card__field {
   display: flex;
   flex-direction: column;
-  gap: $space-1;
+  gap: $space-2;
 }
 
-.project-card__field-label {
+.project-card__label {
   font-family: $font-mono;
   font-size: $font-size-xs;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: $color-text-muted;
+  color: var(--project-accent, #{$color-accent-cyan});
+  opacity: 0.75;
 }
 
-.project-card__field-text {
+.project-card__p {
   font-family: $font-sans;
-  font-size: $font-size-sm;
+  font-size: $font-size-base;
   color: $color-text-secondary;
-  line-height: 1.6;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @include desktop {
+    font-size: clamp($font-size-base, 1.1vw, $font-size-md);
+    -webkit-line-clamp: 5;
+  }
 }
 
-// --- STACK ---
-.project-card__stack {
+// ---- RIGHT: stack + CTAs ----
+.project-card__aside {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
-  margin-bottom: $space-6;
+  gap: $space-5;
+
+  @include desktop {
+    flex: 2;
+    justify-content: space-between;
+    height: 100%;
+  }
+}
+
+.project-card__stack-block {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
 }
 
 .project-card__stack-list {
@@ -140,77 +222,100 @@
   gap: $space-2;
 }
 
-.project-card__stack-item {
+.project-card__stack-badge {
   font-family: $font-mono;
-  font-size: $font-size-xs;
-  color: $color-text-secondary;
-  background: rgba($color-bg-surface, 0.8);
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  background: rgba($color-bg-surface, 0.9);
   border: 1px solid $color-border;
   border-radius: $radius-sm;
-  padding: 2px $space-3;
+  padding: $space-1 $space-3;
+  letter-spacing: 0.04em;
 
   &::before {
     content: '# ';
-    color: $color-text-muted;
+    color: var(--project-accent, #{$color-accent-cyan});
+    opacity: 0.6;
   }
 }
 
-// --- FOOTER ---
-.project-card__footer {
+// ---- CTA BUTTONS ----
+.project-card__ctas {
   display: flex;
-  align-items: center;
-  gap: $space-6;
-  padding-top: $space-4;
-  border-top: 1px solid $color-border;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    gap: $space-4;
+  }
 }
 
-.project-card__link {
-  display: inline-flex;
+.project-card__cta {
+  display: flex;
   align-items: center;
-  gap: $space-1;
+  justify-content: space-between;
+  gap: $space-2;
+  padding: $space-3 $space-5;
+  border: 1px solid var(--project-accent, #{$color-accent-cyan});
+  color: var(--project-accent, #{$color-accent-cyan});
   font-family: $font-mono;
   font-size: $font-size-sm;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  transition: opacity $transition-fast, gap $transition-fast;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  transition: background $transition-fast, box-shadow $transition-fast;
 
   &:hover {
-    opacity: 0.75;
+    background: var(--project-accent-faint, rgba(0, 212, 255, 0.08));
+    box-shadow: 0 0 18px var(--project-accent-glow, rgba(0, 212, 255, 0.25));
+  }
 
-    .project-card__link-arrow {
-      transform: translate(2px, -2px);
+  // Filled variant (live link)
+  &--filled {
+    background: var(--project-accent-faint, rgba(0, 212, 255, 0.08));
+
+    &:hover {
+      background: rgba(0, 0, 0, 0); // let the base rule handle it
+      filter: brightness(1.15);
     }
   }
 }
 
-.project-card__link-arrow {
-  display: inline-block;
+.project-card__cta-arrow {
+  font-size: 1.1rem;
   transition: transform $transition-fast;
+
+  .project-card__cta:hover & {
+    transform: translate(3px, -3px);
+  }
 }
 
-.project-card__link--disabled {
+.project-card__cta-disabled {
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-text-muted;
   font-style: italic;
+  padding: $space-2 0;
 }
 
-// --- HOLOGRAPHIC SHIMMER ---
-.project-card__holo-overlay {
+// ---- HOLOGRAPHIC SHIMMER ----
+.project-card__shimmer {
   position: absolute;
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
   background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.03) 45%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 55%,
-    transparent 60%
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.02) 42%,
+    rgba(255, 255, 255, 0.045) 50%,
+    rgba(255, 255, 255, 0.02) 58%,
+    transparent 65%
   );
   opacity: 0;
   transition: opacity $transition-base;
+  z-index: 2;
 
   .project-card:hover & {
     opacity: 1;

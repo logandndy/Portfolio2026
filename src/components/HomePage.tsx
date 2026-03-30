@@ -44,12 +44,12 @@ export default function HomePage({ dict: initialDict, lang: initialLang }: HomeP
       const el = document.getElementById(SECTIONS[nextIdx]);
       if (el) window.scrollTo({ top: el.offsetTop, behavior: "instant" } as ScrollToOptions);
       currentIdxRef.current = nextIdx;
-    });
+    }, direction);
 
-    // Unlock after full animation (cover ~0.65s + stagger ~0.55s + uncover ~0.52s + stagger ~0.4s + buffer)
+    // Unlock after full animation (cover 0.45s + uncover 0.38s + buffer)
     setTimeout(() => {
       isTransitioningRef.current = false;
-    }, 1600);
+    }, 870);
   }, []);
 
   // Keep currentIdxRef in sync via IntersectionObserver

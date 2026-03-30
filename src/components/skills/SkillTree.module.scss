@@ -2,239 +2,427 @@
 @use '../../styles/mixins' as *;
 
 // ============================================================
-// SKILL TREE — RPG Style
+// SKILL TREE — 2-panel desktop / tabs mobile, GSAP animated
 // ============================================================
 
 .skills-section {
   position: relative;
   height: 100dvh;
-  overflow-y: auto;
-  background: $color-bg-deep;
+  padding-top: var(--navbar-h);
   overflow: hidden;
+  background: $color-bg-deep;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &::before {
-    content: '';
+  &__topline {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      $color-accent-cyan,
-      $color-accent-violet,
-      transparent
-    );
-    opacity: 0.4;
+    background: linear-gradient(90deg, transparent, $color-accent-violet, $color-accent-cyan, transparent);
+    opacity: 0.35;
   }
 }
 
-.skills-section__inner {
-  @include section-layout;
-  position: relative;
+// ── INNER WRAPPER ─────────────────────────────────────────────
+.skills-inner {
+  width: 100%;
+  max-width: 1280px;
+  height: calc(100dvh - var(--navbar-h));
+  padding: 0 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    padding: 0 $space-8;
+    gap: 0; // layout handles spacing
+  }
 }
 
-.skills-section__header {
-  margin-bottom: $space-16;
+// ── MOBILE HEADER (hidden on desktop) ─────────────────────────
+.skills-mobile-header {
+  flex-shrink: 0;
+
+  @include desktop {
+    display: none;
+  }
 }
 
-.skills-section__eyebrow {
+// ── SHARED TEXT STYLES ─────────────────────────────────────────
+.skills-eyebrow {
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-accent-violet;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  margin-bottom: $space-3;
+  margin-bottom: $space-2;
+  opacity: 0.85;
 }
 
-.skills-section__title {
+.skills-title {
   font-family: $font-sans;
-  font-size: clamp(#{$font-size-2xl}, 5vw, #{$font-size-4xl});
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   font-weight: 800;
   color: $color-text-primary;
-  margin-bottom: $space-4;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.skills-section__subtitle {
-  font-family: $font-sans;
-  font-size: $font-size-md;
-  color: $color-text-secondary;
-  max-width: 500px;
-}
-
-// --- TREE LAYOUT ---
-.skill-tree {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $space-8;
-
-  @include tablet {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
-}
-
-// --- CATEGORY ---
-.skill-category {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-}
-
-.skill-category__header {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  margin-bottom: $space-2;
-}
-
-.skill-category__label {
-  font-family: $font-mono;
-  font-size: $font-size-xs;
-  font-weight: 600;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: $color-text-muted;
-  white-space: nowrap;
-}
-
-.skill-category__line {
-  flex: 1;
-  height: 1px;
-  background: $color-border;
-}
-
-.skill-category__nodes {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-// --- SKILL NODE ---
-.skill-node {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  padding: $space-3 $space-4;
-  background: $color-bg-card;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  cursor: default;
-  transition:
-    border-color $transition-base,
-    background $transition-base,
-    box-shadow $transition-base,
-    transform $transition-fast;
-
-  &--hovered,
-  &:hover {
-    background: $color-bg-card-hover;
-    transform: translateX(4px);
-    box-shadow: 0 0 20px rgba(var(--skill-color, 0, 212, 255), 0.15);
-  }
-}
-
-.skill-node__icon {
-  font-family: $font-mono;
-  font-size: $font-size-base;
-  font-weight: 700;
-  width: 32px;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.skill-node__name {
-  flex: 1;
-  font-family: $font-sans;
-  font-size: $font-size-sm;
-  font-weight: 500;
-  color: $color-text-primary;
-}
-
-.skill-node__level {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.skill-node__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: $color-bg-surface;
-  border: 1px solid $color-border;
-
-  &--filled {
-    border-color: transparent;
-    box-shadow: 0 0 4px currentColor;
-  }
-}
-
-// --- TOOLTIP ---
-.skill-tooltip {
-  position: fixed;
-  bottom: $space-8;
-  right: $space-8;
-  @include glass-card;
-  padding: $space-4 $space-6;
-  max-width: 280px;
-  z-index: $z-toast;
-
-  @include mobile {
-    position: relative;
-    bottom: auto;
-    right: auto;
-    max-width: 100%;
-    margin-top: $space-6;
-  }
-}
-
-.skill-tooltip__name {
-  font-family: $font-sans;
-  font-size: $font-size-base;
-  font-weight: 700;
-  margin-bottom: $space-2;
-}
-
-.skill-tooltip__desc {
+.skills-subtitle {
   font-family: $font-sans;
   font-size: $font-size-sm;
   color: $color-text-secondary;
   line-height: 1.6;
-  margin-bottom: $space-4;
+  margin-top: $space-3;
+  max-width: 260px;
 }
 
-.skill-tooltip__level {
+// ── TWO-PANEL LAYOUT ──────────────────────────────────────────
+.skills-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    flex-direction: row;
+    gap: 0;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    background: rgba($color-bg-card, 0.5);
+  }
+}
+
+// ══ LEFT NAV PANEL ════════════════════════════════════════════
+.skills-nav {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    width: 260px;
+    border-right: 1px solid $color-border;
+    padding: $space-8;
+    gap: $space-6;
+    background: rgba($color-bg-deep, 0.4);
+  }
+}
+
+// Desktop-only heading block
+.skills-nav__heading {
+  display: none;
+
+  @include desktop {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// Category tab list
+.skills-nav__list {
+  display: flex;
+  flex-direction: row;
+  gap: $space-2;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: $space-1;
+
+  &::-webkit-scrollbar { display: none; }
+
+  @include desktop {
+    flex-direction: column;
+    gap: $space-1;
+    overflow-x: visible;
+    padding-bottom: 0;
+    margin-top: auto; // push to bottom of panel
+  }
+}
+
+// Single category tab
+.skills-nav__item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba($color-bg-surface, 0.5);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-family: $font-mono;
+  color: $color-text-muted;
+  transition: background $transition-fast, border-color $transition-fast;
+  white-space: nowrap;
+
+  @include desktop {
+    padding: $space-3 $space-4;
+    border-radius: $radius-sm;
+    width: 100%;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+
+  &:hover:not(&--active) {
+    background: rgba($color-bg-surface, 0.9);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: $color-text-secondary;
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--cat-color, #{$color-accent-cyan});
+    box-shadow: inset 3px 0 0 var(--cat-color, #{$color-accent-cyan});
+    color: $color-text-primary;
+  }
+}
+
+.skills-nav__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: $color-text-muted;
+  transition: background $transition-fast, box-shadow $transition-fast;
+}
+
+.skills-nav__label {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: left;
+}
+
+.skills-nav__count {
+  font-size: 0.62rem;
+  padding: 1px $space-2;
+  border: 1px solid $color-border;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+  color: $color-text-muted;
+  transition: color $transition-fast, border-color $transition-fast;
+}
+
+// ══ RIGHT CONTENT PANEL ═══════════════════════════════════════
+.skills-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  @include desktop {
+    padding: $space-8;
+    gap: $space-6;
+    overflow: hidden;
+  }
+}
+
+.skills-content__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.skills-content__cat {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.skills-content__count {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  letter-spacing: 0.1em;
+}
+
+.skills-content__bar {
+  flex: 1;
+  height: 1px;
+  opacity: 0.5;
+  border-radius: 1px;
+}
+
+// ── SKILLS GRID ───────────────────────────────────────────────
+.skills-grid {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba($color-accent-cyan, 0.2) transparent;
+  padding-right: $space-1;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-content: start;
+    overflow-y: auto;
+  }
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($color-accent-cyan, 0.25);
+    border-radius: 2px;
+  }
+}
+
+// ══ SKILL NODE ════════════════════════════════════════════════
+.skill-node {
+  position: relative;
+  background: rgba($color-bg-card, 0.6);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4 $space-4 $space-4 $space-5;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color $transition-fast, background $transition-fast, box-shadow $transition-fast;
+  will-change: transform;
+
+  &:hover, &--active {
+    border-color: var(--skill-color, #{$color-accent-cyan});
+    background: var(--skill-color-faint, rgba(0, 212, 255, 0.05));
+    box-shadow: 0 0 20px var(--skill-color-glow, rgba(0, 212, 255, 0.2));
+  }
+}
+
+// Thick left accent bar
+.skill-node__accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--skill-color, #{$color-accent-cyan});
+  border-radius: $radius-sm 0 0 $radius-sm;
+  box-shadow: 0 0 10px var(--skill-color-glow, rgba(0, 212, 255, 0.4));
+}
+
+// Main horizontal row: icon | center | meta
+.skill-node__row {
   display: flex;
   align-items: center;
   gap: $space-3;
 }
 
-.skill-tooltip__level-label {
+// Icon badge
+.skill-node__icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 700;
+  letter-spacing: 0;
+  background: rgba($color-bg-deep, 0.6);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+
+  @include desktop {
+    width: 44px;
+    height: 44px;
+    font-size: $font-size-sm;
+  }
+}
+
+// Center: name + bar
+.skill-node__center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.skill-node__name {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  font-weight: 700;
+  color: $color-text-primary;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include desktop {
+    font-size: $font-size-md;
+  }
+}
+
+// Progress track
+.skill-node__track {
+  height: 4px;
+  background: rgba($color-bg-surface, 0.8);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-node__bar {
+  height: 100%;
+  border-radius: 2px;
+  // width & colors set via inline style
+  // scaleX animated via GSAP from parent
+  transform-origin: left center;
+}
+
+// Right meta block
+.skill-node__meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.skill-node__level {
+  font-family: $font-mono;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.skill-node__pct {
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-text-muted;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.skill-tooltip__level-bar {
-  display: flex;
-  gap: $space-1;
+// Expandable description
+.skill-node__detail {
+  // height & opacity animated by GSAP
 }
 
-.skill-tooltip__level-pip {
-  width: 20px;
-  height: 4px;
-  border-radius: 2px;
-  background: $color-bg-surface;
-  border: 1px solid $color-border;
+.skill-node__desc {
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.65;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+  margin-top: $space-3;
 
-  &--filled {
-    border-color: transparent;
+  @include desktop {
+    font-size: $font-size-base;
   }
 }

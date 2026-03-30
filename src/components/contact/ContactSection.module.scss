@@ -9,6 +9,7 @@
   background: $color-bg-dark;
   position: relative;
   height: 100dvh;
+  padding-top: var(--navbar-h);
   overflow-y: auto;
 
   &::before {

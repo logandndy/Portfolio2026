@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { motion } from "framer-motion";
 import gsap from "gsap";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
@@ -13,156 +12,133 @@ interface ProjectCardProps {
   dict: Dictionary;
   lang: Lang;
   index: number;
-  isInView: boolean;
 }
 
-export default function ProjectCard({
-  project,
-  dict,
-  lang,
-  index,
-  isInView,
-}: ProjectCardProps) {
+export default function ProjectCard({ project, dict, lang, index }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseEnter = () => {
-    gsap.to(cardRef.current, {
-      y: -6,
-      duration: 0.3,
-      ease: "power2.out",
-    });
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const r  = card.getBoundingClientRect();
+    const rx = -((e.clientY - (r.top  + r.height / 2)) / (r.height / 2)) * 4;
+    const ry =  ((e.clientX - (r.left + r.width  / 2)) / (r.width  / 2)) * 4;
+    gsap.to(card, { rotateX: rx, rotateY: ry, duration: 0.3, ease: "power2.out", overwrite: "auto" });
   };
-
   const handleMouseLeave = () => {
-    gsap.to(cardRef.current, {
-      y: 0,
-      duration: 0.4,
-      ease: "power2.out",
-    });
+    gsap.to(cardRef.current, { rotateX: 0, rotateY: 0, duration: 0.55, ease: "power3.out", overwrite: "auto" });
   };
 
-  const title = lang === "fr" ? project.titleFr : project.titleEn;
+  const title   = lang === "fr" ? project.titleFr   : project.titleEn;
   const problem = lang === "fr" ? project.problemFr : project.problemEn;
-  const solution = lang === "fr" ? project.solutionFr : project.solutionEn;
+  const solution= lang === "fr" ? project.solutionFr: project.solutionEn;
 
   return (
-    <motion.div
-      className={styles["project-card-wrapper"]}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: 0.7,
-        delay: index * 0.12,
-        ease: [0.16, 1, 0.3, 1],
-      }}
+    <div
+      ref={cardRef}
+      className={styles["project-card"]}
+      style={{
+        "--project-accent":       project.accentColor,
+        "--project-accent-faint": `${project.accentColor}14`,
+        "--project-accent-glow":  `${project.accentColor}40`,
+      } as React.CSSProperties}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <div
-        ref={cardRef}
-        className={styles["project-card"]}
-        style={{ "--project-accent": project.accentColor } as React.CSSProperties}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {/* Corner accent */}
-        <div
-          className={styles["project-card__corner"]}
-          style={{ background: project.accentColor }}
-        />
+      {/* Corner cut */}
+      <div className={styles["project-card__corner"]} style={{ background: project.accentColor }} />
 
-        {/* Header */}
-        <div className={styles["project-card__header"]}>
-          <div className={styles["project-card__meta"]}>
+      {/* Ghost watermark number */}
+      <div className={styles["project-card__ghost"]} aria-hidden>
+        {String(index + 1).padStart(2, "0")}
+      </div>
+
+      {/* ── TOP META ── */}
+      <div className={styles["project-card__top"]}>
+        <span className={styles["project-card__index"]} style={{ color: project.accentColor }}>
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <span className={styles["project-card__year"]}>{project.year}</span>
+        <div className={styles["project-card__tags"]}>
+          {project.tags.map((tag) => (
             <span
-              className={styles["project-card__index"]}
-              style={{ color: project.accentColor }}
+              key={tag}
+              className={styles["project-card__tag"]}
+              style={{ borderColor: `${project.accentColor}55`, color: project.accentColor }}
             >
-              {String(index + 1).padStart(2, "0")}
+              {tag}
             </span>
-            <span className={styles["project-card__year"]}>{project.year}</span>
-          </div>
-          <h3 className={styles["project-card__title"]}>{title}</h3>
-
-          <div className={styles["project-card__tags"]}>
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className={styles["project-card__tag"]}
-                style={{
-                  borderColor: `${project.accentColor}40`,
-                  color: project.accentColor,
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* Body */}
-        <div className={styles["project-card__body"]}>
+      {/* ── TITLE + accent line ── */}
+      <div className={styles["project-card__title-block"]}>
+        <h3 className={styles["project-card__title"]}>{title}</h3>
+        <div
+          className={styles["project-card__title-bar"]}
+          style={{ background: project.accentColor, boxShadow: `0 0 12px var(--project-accent-glow)` }}
+        />
+      </div>
+
+      {/* ── BODY: 2-col on desktop ── */}
+      <div className={styles["project-card__body"]}>
+
+        {/* Left: problem + solution */}
+        <div className={styles["project-card__text"]}>
           <div className={styles["project-card__field"]}>
-            <span className={styles["project-card__field-label"]}>
-              {dict.projects.problem}
-            </span>
-            <p className={styles["project-card__field-text"]}>{problem}</p>
+            <span className={styles["project-card__label"]}>{dict.projects.problem}</span>
+            <p className={styles["project-card__p"]}>{problem}</p>
           </div>
-
           <div className={styles["project-card__field"]}>
-            <span className={styles["project-card__field-label"]}>
-              {dict.projects.solution}
-            </span>
-            <p className={styles["project-card__field-text"]}>{solution}</p>
+            <span className={styles["project-card__label"]}>{dict.projects.solution}</span>
+            <p className={styles["project-card__p"]}>{solution}</p>
           </div>
         </div>
 
-        {/* Stack */}
-        <div className={styles["project-card__stack"]}>
-          <span className={styles["project-card__field-label"]}>
-            {dict.projects.stack}
-          </span>
-          <div className={styles["project-card__stack-list"]}>
-            {project.stack.map((tech) => (
-              <span key={tech} className={styles["project-card__stack-item"]}>
-                {tech}
-              </span>
-            ))}
+        {/* Right: stack + CTA buttons */}
+        <div className={styles["project-card__aside"]}>
+          <div className={styles["project-card__stack-block"]}>
+            <span className={styles["project-card__label"]}>{dict.projects.stack}</span>
+            <div className={styles["project-card__stack-list"]}>
+              {project.stack.map((tech) => (
+                <span key={tech} className={styles["project-card__stack-badge"]}>{tech}</span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Footer links */}
-        <div className={styles["project-card__footer"]}>
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles["project-card__link"]}
-            style={{ color: project.accentColor }}
-          >
-            <span>{dict.projects.viewCode}</span>
-            <span className={styles["project-card__link-arrow"]}>↗</span>
-          </a>
-
-          {project.liveUrl ? (
+          <div className={styles["project-card__ctas"]}>
             <a
-              href={project.liveUrl}
+              href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={styles["project-card__link"]}
-              style={{ color: project.accentColor }}
+              className={styles["project-card__cta"]}
             >
-              <span>{dict.projects.viewLive}</span>
-              <span className={styles["project-card__link-arrow"]}>↗</span>
+              <span>{dict.projects.viewCode}</span>
+              <span className={styles["project-card__cta-arrow"]}>↗</span>
             </a>
-          ) : (
-            <span className={styles["project-card__link--disabled"]}>
-              {dict.projects.noLive}
-            </span>
-          )}
+            {project.liveUrl ? (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles["project-card__cta"]} ${styles["project-card__cta--filled"]}`}
+              >
+                <span>{dict.projects.viewLive}</span>
+                <span className={styles["project-card__cta-arrow"]}>↗</span>
+              </a>
+            ) : (
+              <span className={styles["project-card__cta-disabled"]}>
+                {dict.projects.noLive}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Holographic shimmer overlay */}
-        <div className={styles["project-card__holo-overlay"]} aria-hidden />
       </div>
-    </motion.div>
+
+      {/* Holo shimmer */}
+      <div className={styles["project-card__shimmer"]} aria-hidden />
+    </div>
   );
 }

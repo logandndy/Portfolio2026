@@ -2,186 +2,201 @@
 import { useRef, useImperativeHandle, forwardRef } from "react";
 
 export interface SectionTransitionHandle {
-  play(onMidpoint: () => void): void;
+  play(onMidpoint: () => void, direction: 1 | -1): void;
 }
 
-const CELL = 5;
-const TRAIL = 32;
-const CHARS = "0123456789ABCDEF<>{}[]!@#/\\";
-const CYAN = "#00d4ff";
-const VIOLET = "#9b5de5";
-const HEAD_COLOR = "#d0f0ff";
+// ─── constants ────────────────────────────────────────────────
+const CELL      = 5;                               // px — pixel size
+const CHARS     = "0123456789ABCDEF<>[]{}#@!%^&*"; // glyphs inside each cell
+const COL_BG    = "#020408";                       // near-black bg
+const COL_DIM   = "rgba(0,212,255,0.18)";          // resting glyph
+const COL_HEAD  = "#ffffff";                       // wave-front bright
+const COL_TRAIL = "#00d4ff";                       // trail neon cyan
+const COL_FILL  = "#020408";                       // solid fill colour
 
-function rndChar() {
-  return CHARS[(Math.random() * CHARS.length) | 0];
-}
+// Cover duration then uncover duration (seconds)
+const DUR_COVER   = 0.45;
+const DUR_UNCOVER = 0.38;
 
+// ─── helper ───────────────────────────────────────────────────
+function randChar() { return CHARS[Math.floor(Math.random() * CHARS.length)]; }
+
+// ─── component ────────────────────────────────────────────────
 const SectionTransition = forwardRef<SectionTransitionHandle, {}>(
   function SectionTransition(_, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const rafRef    = useRef<number>(0);
 
     useImperativeHandle(ref, () => ({
-      play(onMidpoint: () => void) {
+      play(onMidpoint: () => void, direction: 1 | -1 = 1) {
         const canvas = canvasRef.current;
         if (!canvas) { onMidpoint(); return; }
 
-        const W = window.innerWidth;
-        const H = window.innerHeight;
+        // ── Setup ──────────────────────────────────────────────
+        const W   = window.innerWidth;
+        const H   = window.innerHeight;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        canvas.width = W * dpr;
-        canvas.height = H * dpr;
-        canvas.style.width = W + "px";
-        canvas.style.height = H + "px";
-        canvas.style.display = "block";
+        canvas.width          = W * dpr;
+        canvas.height         = H * dpr;
+        canvas.style.width    = W + "px";
+        canvas.style.height   = H + "px";
+        canvas.style.display  = "block";
+        canvas.style.opacity  = "1";
 
-        const ctx = canvas.getContext("2d")!;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { onMidpoint(); return; }
         ctx.scale(dpr, dpr);
-        ctx.font = `${CELL}px 'JetBrains Mono', 'Courier New', monospace`;
-        ctx.textBaseline = "top";
 
-        const cols = Math.ceil(W / CELL);
-        const rows = Math.ceil(H / CELL);
+        // Grid dimensions
+        const COLS = Math.ceil(W / CELL);
+        const ROWS = Math.ceil(H / CELL);
 
-        const COVER_DUR = 0.65;
-        const UNCOVER_DUR = 0.52;
-        const STAGGER = 0.55; // spread window in seconds
+        // Each cell keeps its own random glyph (shuffled on wave-front pass)
+        const glyphs: string[] = Array.from({ length: COLS * ROWS }, randChar);
 
-        // Pre-compute per-column delays (left→right + small jitter)
-        const coverDelay = Float32Array.from({ length: cols }, (_, c) =>
-          (c / (cols - 1)) * STAGGER + Math.random() * 0.025
-        );
-        const uncoverDelay = Float32Array.from({ length: cols }, (_, c) =>
-          (c / (cols - 1)) * STAGGER * 0.75 + Math.random() * 0.015
-        );
-
-        // Per-column fill duration (remaining time after stagger)
-        const coverColDur = COVER_DUR * 0.55;
-        const uncoverColDur = UNCOVER_DUR * 0.55;
-
-        // Static char grid (scrambled periodically)
-        const cellChars = Array.from({ length: cols * rows }, rndChar);
+        // ── Phase state ────────────────────────────────────────
+        cancelAnimationFrame(rafRef.current);
 
         let phase: "cover" | "uncover" = "cover";
         let phaseStart = performance.now();
-        let midpointFired = false;
-        let rafId: number;
-        let frame = 0;
+        let midFired   = false;
 
+        // ── Draw ───────────────────────────────────────────────
         const draw = (now: number) => {
-          frame++;
-          const elapsed = (now - phaseStart) / 1000;
+          const elapsed  = (now - phaseStart) / 1000;
+          const isCover  = phase === "cover";
+          const totalDur = isCover ? DUR_COVER : DUR_UNCOVER;
+          const t        = Math.min(elapsed / totalDur, 1); // 0 → 1
 
-          // Scramble ~15% of chars every 3 frames
-          if (frame % 3 === 0) {
-            for (let i = 0; i < cellChars.length; i++) {
-              if (Math.random() < 0.15) cellChars[i] = rndChar();
-            }
-          }
-
+          // Clear
           ctx.clearRect(0, 0, W, H);
-          let allDone = true;
 
-          for (let c = 0; c < cols; c++) {
-            if (phase === "cover") {
-              const colT = elapsed - coverDelay[c];
-              if (colT < 0) { allDone = false; continue; }
+          // ── Row-based wave ─────────────────────────────────
+          // direction  1 = scroll down → wave top→bottom
+          // direction -1 = scroll up   → wave bottom→top
+          //
+          // "covered" means a row is fully opaque black
+          // Wave-front row index:
+          //   cover phase:   front travels from row 0 → ROWS   (direction 1)
+          //                  or ROWS → 0   (direction -1)
+          //   uncover phase: reverse of cover
 
-              const progress = Math.min(colT / coverColDur, 1);
-              const head = progress * rows;
-              if (progress < 1) allDone = false;
+          const totalRows = ROWS;
 
-              // Dark cover for the filled portion
-              ctx.globalAlpha = 1;
-              ctx.fillStyle = "#020408";
-              ctx.fillRect(c * CELL, 0, CELL, head * CELL);
+          // For cover: front advances from leading edge inward
+          // rowProgress(row) → how "covered" that row is [0..1]
+          const waveFront = (rowIdx: number): number => {
+            // Normalised row position 0..1 from leading edge
+            const normRow = direction > 0
+              ? rowIdx / (totalRows - 1)          // 0=top, 1=bottom
+              : (totalRows - 1 - rowIdx) / (totalRows - 1); // 0=bottom, 1=top
 
-              // Trail characters near the head
-              const headRow = Math.floor(head);
-              const trailStart = Math.max(0, headRow - TRAIL);
-
-              for (let r = trailStart; r <= Math.min(headRow, rows - 1); r++) {
-                const dist = headRow - r;
-                let alpha: number;
-                let color: string;
-
-                if (dist <= 1) {
-                  alpha = 1.0;
-                  color = HEAD_COLOR;
-                } else if (dist <= 4) {
-                  alpha = 0.88 - (dist - 1) * 0.08;
-                  color = CYAN;
-                } else if (dist <= 15) {
-                  alpha = 0.58 - (dist - 4) * 0.022;
-                  color = CYAN;
-                } else {
-                  alpha = 0.18 + Math.random() * 0.1;
-                  color = Math.random() > 0.38 ? CYAN : VIOLET;
-                }
-
-                ctx.globalAlpha = Math.max(0, alpha);
-                ctx.fillStyle = color;
-                ctx.fillText(cellChars[r * cols + c], c * CELL, r * CELL);
-              }
-
+            // In cover phase, wave sweeps forward (0→1 over time t)
+            // In uncover phase, wave sweeps backward (1→0 over time t)
+            if (isCover) {
+              // How far ahead is the wavefront vs this row?
+              // wavefront at t=1 has passed all rows
+              return t - normRow; // positive = covered
             } else {
-              // Uncover phase
-              const colT = elapsed - uncoverDelay[c];
+              // Uncover: wavefront clears rows in same direction as cover
+              return t - normRow; // positive = uncovered
+            }
+          };
 
-              if (colT < 0) {
-                // Column not cleared yet — static dim chars covering full column
-                for (let r = 0; r < rows; r++) {
-                  ctx.globalAlpha = 0.18 + Math.random() * 0.08;
-                  ctx.fillStyle = Math.random() > 0.4 ? CYAN : VIOLET;
-                  ctx.fillText(cellChars[r * cols + c], c * CELL, r * CELL);
-                }
-                allDone = false;
-              } else {
-                const progress = Math.min(colT / uncoverColDur, 1);
-                const clearHead = progress * rows;
+          ctx.font          = `bold ${CELL - 1}px 'Courier New', monospace`;
+          ctx.textBaseline  = "top";
+          ctx.textAlign     = "left";
 
-                if (progress < 1) {
-                  allDone = false;
-                  // Dark cover for remaining (below clear boundary)
+          for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLS; col++) {
+              const x    = col * CELL;
+              const y    = row * CELL;
+              const idx  = row * COLS + col;
+              const wf   = waveFront(row);
+
+              if (isCover) {
+                if (wf <= 0) {
+                  // Not yet reached — draw resting glyph (dim)
+                  ctx.fillStyle = COL_BG;
+                  ctx.fillRect(x, y, CELL, CELL);
+                  if (Math.random() < 0.003) glyphs[idx] = randChar(); // idle flicker
+                  ctx.fillStyle = COL_DIM;
+                  ctx.fillText(glyphs[idx], x, y);
+                } else if (wf < 0.06) {
+                  // Wave head — bright white pixel
+                  glyphs[idx] = randChar();
+                  ctx.fillStyle = COL_HEAD;
+                  ctx.fillRect(x, y, CELL, CELL);
+                  ctx.fillStyle = COL_BG;
+                  ctx.fillText(glyphs[idx], x, y);
+                } else if (wf < 0.18) {
+                  // Trail — fading cyan glyph
+                  const fade = 1 - (wf - 0.06) / 0.12;
+                  glyphs[idx] = randChar();
+                  ctx.fillStyle = COL_FILL;
+                  ctx.fillRect(x, y, CELL, CELL);
+                  ctx.globalAlpha = fade * 0.9;
+                  ctx.fillStyle = COL_TRAIL;
+                  ctx.fillText(glyphs[idx], x, y);
                   ctx.globalAlpha = 1;
-                  ctx.fillStyle = "#020408";
-                  ctx.fillRect(c * CELL, clearHead * CELL, CELL, H - clearHead * CELL);
-
-                  // Fade-out trail at the clear boundary
-                  const clearHeadRow = Math.floor(clearHead);
-                  for (let r = clearHeadRow; r < Math.min(clearHeadRow + TRAIL, rows); r++) {
-                    const dist = r - clearHeadRow;
-                    const alpha = Math.max(0, 0.18 - dist * 0.005) + Math.random() * 0.05;
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = Math.random() > 0.4 ? CYAN : VIOLET;
-                    ctx.fillText(cellChars[r * cols + c], c * CELL, r * CELL);
-                  }
+                } else {
+                  // Fully covered — solid black
+                  ctx.fillStyle = COL_FILL;
+                  ctx.fillRect(x, y, CELL, CELL);
                 }
-                // progress >= 1: fully cleared, nothing drawn (transparent → shows new section)
+              } else {
+                // Uncover phase — wave clears in same direction
+                if (wf <= 0) {
+                  // Still covered
+                  ctx.fillStyle = COL_FILL;
+                  ctx.fillRect(x, y, CELL, CELL);
+                } else if (wf < 0.06) {
+                  // Wave head clearing — bright flash then reveals content
+                  glyphs[idx] = randChar();
+                  ctx.fillStyle = COL_HEAD;
+                  ctx.fillRect(x, y, CELL, CELL);
+                  ctx.fillStyle = COL_BG;
+                  ctx.fillText(glyphs[idx], x, y);
+                } else if (wf < 0.18) {
+                  // Brief cyan dissolve
+                  const fade = 1 - (wf - 0.06) / 0.12;
+                  ctx.fillStyle = COL_BG;
+                  ctx.fillRect(x, y, CELL, CELL);
+                  if (fade > 0.05) {
+                    ctx.globalAlpha = fade * 0.6;
+                    ctx.fillStyle = COL_TRAIL;
+                    ctx.fillText(glyphs[idx], x, y);
+                    ctx.globalAlpha = 1;
+                  }
+                } else {
+                  // Fully cleared — transparent (content shows through)
+                  // nothing to draw
+                }
               }
             }
           }
 
-          ctx.globalAlpha = 1;
-
-          if (phase === "cover" && allDone && !midpointFired) {
-            midpointFired = true;
-            onMidpoint();
-            phase = "uncover";
+          // ── Phase transitions ──────────────────────────────
+          if (isCover && t >= 1 && !midFired) {
+            midFired   = true;
+            phase      = "uncover";
             phaseStart = performance.now();
-            rafId = requestAnimationFrame(draw);
+            onMidpoint();
+            rafRef.current = requestAnimationFrame(draw);
             return;
           }
 
-          if (phase === "uncover" && allDone) {
+          if (!isCover && t >= 1) {
+            ctx.clearRect(0, 0, W, H);
             canvas.style.display = "none";
             return;
           }
 
-          rafId = requestAnimationFrame(draw);
+          rafRef.current = requestAnimationFrame(draw);
         };
 
-        rafId = requestAnimationFrame(draw);
+        rafRef.current = requestAnimationFrame(draw);
       },
     }));
 
@@ -189,11 +204,12 @@ const SectionTransition = forwardRef<SectionTransitionHandle, {}>(
       <canvas
         ref={canvasRef}
         style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9998,
-          display: "none",
+          position:      "fixed",
+          inset:         0,
+          zIndex:        9999,
+          display:       "none",
           pointerEvents: "none",
+          imageRendering: "pixelated",
         }}
       />
     );

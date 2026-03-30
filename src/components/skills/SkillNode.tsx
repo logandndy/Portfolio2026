@@ -1,69 +1,109 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import gsap from "gsap";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
 import type { Skill } from "@/data/skills";
 import styles from "./SkillTree.module.scss";
 
+const LEVEL_LABELS = ["—", "INIT", "LEARNING", "PROFICIENT", "ADVANCED", "MASTER"] as const;
+
 interface SkillNodeProps {
-  skill: Skill;
-  dict: Dictionary;
-  lang: Lang;
-  index: number;
-  isInView: boolean;
-  isHovered: boolean;
-  onHover: (skill: Skill | null) => void;
+  skill:      Skill;
+  dict:       Dictionary;
+  lang:       Lang;
+  index:      number;
+  isActive:   boolean;
+  onActivate: (s: Skill) => void;
 }
 
-export default function SkillNode({
-  skill,
-  dict,
-  lang,
-  index,
-  isInView,
-  isHovered,
-  onHover,
-}: SkillNodeProps) {
+export default function SkillNode({ skill, lang, index, isActive, onActivate }: SkillNodeProps) {
+  const nodeRef   = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const prevActive = useRef(false);
+
+  // Expand/collapse detail on isActive change
+  if (prevActive.current !== isActive && detailRef.current) {
+    const el = detailRef.current;
+    if (isActive) {
+      gsap.fromTo(el,
+        { height: 0, opacity: 0 },
+        { height: "auto", opacity: 1, duration: 0.32, ease: "power3.out" }
+      );
+    } else {
+      gsap.to(el, { height: 0, opacity: 0, duration: 0.22, ease: "power2.in" });
+    }
+    prevActive.current = isActive;
+  }
+
+  const handleMouseEnter = () => {
+    gsap.to(nodeRef.current, { y: -3, duration: 0.22, ease: "power2.out", overwrite: "auto" });
+  };
+  const handleMouseLeave = () => {
+    gsap.to(nodeRef.current, { y: 0, duration: 0.35, ease: "power3.out", overwrite: "auto" });
+  };
+
+  const pct         = (skill.level / 5) * 100;
+  const levelLabel  = LEVEL_LABELS[skill.level];
+  const description = lang === "fr" ? skill.descriptionFr : skill.descriptionEn;
+
   return (
-    <motion.div
-      className={`${styles["skill-node"]} ${isHovered ? styles["skill-node--hovered"] : ""}`}
+    <div
+      ref={nodeRef}
+      data-node
+      className={`${styles["skill-node"]} ${isActive ? styles["skill-node--active"] : ""}`}
       style={{
-        "--skill-color": skill.color,
-        borderColor: isHovered ? skill.color : undefined,
+        "--skill-color":      skill.color,
+        "--skill-color-faint": `${skill.color}18`,
+        "--skill-color-glow":  `${skill.color}50`,
       } as React.CSSProperties}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.08 + 0.3 }}
-      onMouseEnter={() => onHover(skill)}
-      onMouseLeave={() => onHover(null)}
+      onClick={() => onActivate(skill)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onActivate(skill)}
+      aria-expanded={isActive}
     >
-      {/* Icon */}
-      <div
-        className={styles["skill-node__icon"]}
-        style={{ color: skill.color }}
-      >
-        {skill.icon}
+      {/* Left accent */}
+      <div className={styles["skill-node__accent"]} />
+
+      {/* Main row */}
+      <div className={styles["skill-node__row"]}>
+        {/* Icon badge */}
+        <div className={styles["skill-node__icon"]} style={{ borderColor: `${skill.color}70`, color: skill.color }}>
+          {skill.icon}
+        </div>
+
+        {/* Name + bar */}
+        <div className={styles["skill-node__center"]}>
+          <div className={styles["skill-node__name"]}>{skill.name}</div>
+          <div className={styles["skill-node__track"]}>
+            <div
+              data-bar
+              className={styles["skill-node__bar"]}
+              style={{
+                width: `${pct}%`,
+                background: skill.color,
+                boxShadow: `0 0 8px ${skill.color}70`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Level label + index */}
+        <div className={styles["skill-node__meta"]}>
+          <span className={styles["skill-node__level"]} style={{ color: skill.color }}>
+            {levelLabel}
+          </span>
+          <span className={styles["skill-node__pct"]}>{pct}%</span>
+        </div>
       </div>
 
-      {/* Name */}
-      <span className={styles["skill-node__name"]}>{skill.name}</span>
-
-      {/* Level dots */}
-      <div className={styles["skill-node__level"]}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className={`${styles["skill-node__dot"]} ${
-              i < skill.level ? styles["skill-node__dot--filled"] : ""
-            }`}
-            style={i < skill.level ? { background: skill.color } : {}}
-            initial={{ scale: 0 }}
-            animate={isInView ? { scale: 1 } : {}}
-            transition={{ delay: index * 0.08 + i * 0.05 + 0.5, duration: 0.3 }}
-          />
-        ))}
+      {/* Expandable description */}
+      <div ref={detailRef} className={styles["skill-node__detail"]} style={{ height: 0, overflow: "hidden", opacity: 0 }}>
+        <p className={styles["skill-node__desc"]}>{description}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }

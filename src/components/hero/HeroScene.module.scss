@@ -55,7 +55,7 @@
   );
 
   @include mobile {
-    padding-top: $space-12;
+    padding-top: calc(var(--navbar-h) + #{$space-4});
     padding-left: $space-4;
     padding-right: $space-4;
     background: rgba($color-bg-deep, 0.7);

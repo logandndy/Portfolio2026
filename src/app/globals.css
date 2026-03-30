@@ -5,6 +5,11 @@
   padding: 0;
 }
 
+:root {
+  /* navbar: padding-top $space-4 (1rem) + ~1.4rem content + padding-bottom $space-4 (1rem) */
+  --navbar-h: 60px;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
