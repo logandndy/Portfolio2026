@@ -6,13 +6,9 @@
 // AI CHATBOT — Centered modal with particle assembly
 // ============================================================
 
-// --- FLOATING TOGGLE (bottom-right) ---
+// --- FLOATING TOGGLE — hidden, triggered from OS icon instead ---
 .chatbot-toggle {
-  position: fixed;
-  bottom: $space-8;
-  right: $space-8;
-  z-index: $z-chatbot;
-  display: flex;
+  display: none !important;
   align-items: center;
   gap: $space-2;
   padding: $space-3 $space-5;

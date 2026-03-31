@@ -33,15 +33,17 @@ const SectionTransition = forwardRef<SectionTransitionHandle, {}>(
         if (!canvas) { onMidpoint(); return; }
 
         // ── Setup ──────────────────────────────────────────────
-        const W   = window.innerWidth;
-        const H   = window.innerHeight;
+        // Read dimensions from the parent screen container, not the viewport
+        canvas.style.display = "block";
+        const parent = canvas.parentElement;
+        const W   = parent ? parent.clientWidth  : window.innerWidth;
+        const H   = parent ? parent.clientHeight : window.innerHeight;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
         canvas.width          = W * dpr;
         canvas.height         = H * dpr;
         canvas.style.width    = W + "px";
         canvas.style.height   = H + "px";
-        canvas.style.display  = "block";
         canvas.style.opacity  = "1";
 
         const ctx = canvas.getContext("2d");
@@ -204,11 +206,11 @@ const SectionTransition = forwardRef<SectionTransitionHandle, {}>(
       <canvas
         ref={canvasRef}
         style={{
-          position:      "fixed",
-          inset:         0,
-          zIndex:        9999,
-          display:       "none",
-          pointerEvents: "none",
+          position:       "absolute",
+          inset:          0,
+          zIndex:         100,
+          display:        "none",
+          pointerEvents:  "none",
           imageRendering: "pixelated",
         }}
       />

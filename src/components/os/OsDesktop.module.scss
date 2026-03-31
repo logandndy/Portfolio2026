@@ -14,68 +14,150 @@
   overflow: hidden;
 }
 
-// ── TASKBAR (top bar) ─────────────────────────────────────────
+// ── TASKBAR ───────────────────────────────────────────────────
 .taskbar {
   flex-shrink: 0;
-  height: 24px;
-  background: rgba(#0a1d2e, 0.95);
-  border-bottom: 1px solid rgba($color-accent-cyan, 0.12);
+  height: 26px;
+  background: rgba(#0a1d2e, 0.97);
+  border-bottom: 1px solid rgba($color-accent-cyan, 0.14);
   display: flex;
   align-items: center;
+  gap: $space-2;
   padding: 0 $space-3;
-  gap: $space-3;
 
   @include desktop {
-    height: 28px;
-    padding: 0 $space-4;
+    height: 30px;
+    padding: 0 $space-5;
+    gap: $space-3;
   }
 }
 
+// Brand <LD />
 .taskbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 1px;
   font-family: $font-mono;
   font-size: 0.6rem;
   font-weight: 700;
-  color: $color-accent-cyan;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  opacity: 0.9;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
 
-  @include desktop {
-    font-size: 0.65rem;
-  }
+  @include desktop { font-size: 0.7rem; }
 }
 
+.taskbar__brand_bracket {
+  color: $color-accent-cyan;
+  opacity: 0.7;
+}
+
+.taskbar__brand_text {
+  color: $color-text-primary;
+  letter-spacing: 0.06em;
+}
+
+// Pulsing status dot
 .taskbar__dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: $color-accent-green;
-  box-shadow: 0 0 6px $color-accent-green;
+  box-shadow: 0 0 5px $color-accent-green;
   flex-shrink: 0;
   animation: pulse 2.5s ease-in-out infinite;
 }
 
-.taskbar__sep {
-  flex: 1;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
 }
+
+// ── LANGUAGE TOGGLE ───────────────────────────────────────────
+.taskbar__lang {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  border: 1px solid rgba($color-accent-cyan, 0.18);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.taskbar__langBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: $font-mono;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: $color-text-muted;
+  padding: 1px $space-2;
+  letter-spacing: 0.1em;
+  transition: color $transition-fast, background $transition-fast;
+
+  &:hover { color: $color-accent-cyan; background: rgba($color-accent-cyan, 0.08); }
+
+  &--active {
+    color: $color-accent-cyan;
+    background: rgba($color-accent-cyan, 0.12);
+  }
+
+  @include desktop { font-size: 0.55rem; }
+}
+
+.taskbar__langSep {
+  color: rgba($color-accent-cyan, 0.2);
+  font-size: 0.5rem;
+  line-height: 1;
+}
+
+// ── CV DOWNLOAD ───────────────────────────────────────────────
+.taskbar__cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: $font-mono;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: $color-accent-violet;
+  text-decoration: none;
+  border: 1px solid rgba($color-accent-violet, 0.3);
+  border-radius: 3px;
+  padding: 1px $space-2;
+  letter-spacing: 0.1em;
+  transition: color $transition-fast, background $transition-fast, border-color $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    color: #c490ff;
+    background: rgba($color-accent-violet, 0.1);
+    border-color: rgba($color-accent-violet, 0.6);
+  }
+
+  @include desktop { font-size: 0.55rem; }
+}
+
+// Separator
+.taskbar__sep { flex: 1; }
 
 .taskbar__status {
   font-family: $font-mono;
-  font-size: 0.55rem;
-  color: $color-text-muted;
+  font-size: 0.5rem;
+  color: $color-accent-green;
   letter-spacing: 0.1em;
+  opacity: 0.75;
+
+  @include desktop { font-size: 0.55rem; }
 }
 
 .taskbar__time {
   font-family: $font-mono;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: $color-text-secondary;
   letter-spacing: 0.05em;
-}
+  flex-shrink: 0;
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  @include desktop { font-size: 0.6rem; }
 }
 
 // ── DESKTOP AREA ─────────────────────────────────────────────
@@ -95,7 +177,7 @@
   }
 }
 
-// Subtle background grid
+// Subtle grid background
 .area::before {
   content: '';
   position: absolute;
@@ -103,11 +185,11 @@
   background-image:
     linear-gradient(rgba($color-accent-cyan, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba($color-accent-cyan, 0.025) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-size: 28px 28px;
   pointer-events: none;
 }
 
-// ── OS GREETING ───────────────────────────────────────────────
+// ── GREETING ─────────────────────────────────────────────────
 .greeting {
   display: flex;
   flex-direction: column;
@@ -115,9 +197,7 @@
   gap: $space-1;
   margin-bottom: $space-2;
 
-  @include desktop {
-    margin-bottom: $space-4;
-  }
+  @include desktop { margin-bottom: $space-4; }
 }
 
 .greeting__title {
@@ -129,20 +209,16 @@
   text-transform: uppercase;
   opacity: 0.85;
 
-  @include desktop {
-    font-size: $font-size-sm;
-  }
+  @include desktop { font-size: $font-size-sm; }
 }
 
 .greeting__sub {
   font-family: $font-mono;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: $color-text-muted;
   letter-spacing: 0.15em;
 
-  @include desktop {
-    font-size: $font-size-xs;
-  }
+  @include desktop { font-size: $font-size-xs; }
 }
 
 // ── ICON GRID ─────────────────────────────────────────────────
@@ -152,20 +228,18 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 
-  @include desktop {
-    gap: $space-10;
-  }
+  @include desktop { gap: $space-10; }
 }
 
-// Single app icon
 .icon {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: $space-2;
   cursor: pointer;
-  transition: transform $transition-fast;
   -webkit-tap-highlight-color: transparent;
   outline: none;
   border: none;
@@ -176,7 +250,8 @@
   &:hover .icon__box,
   &:focus-visible .icon__box {
     border-color: var(--app-color, #{$color-accent-cyan});
-    box-shadow: 0 0 20px var(--app-color, #{$color-accent-cyan}), inset 0 0 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 20px var(--app-color, #{$color-accent-cyan}),
+                inset 0 0 12px rgba(0, 0, 0, 0.4);
     background: rgba(0, 0, 0, 0.6);
   }
 
@@ -185,13 +260,13 @@
     color: var(--app-color, #{$color-accent-cyan});
   }
 
-  &:active { transform: scale(0.92); }
+  &:active { transform: scale(0.91); }
 }
 
 .icon__box {
   width: 52px;
   height: 52px;
-  border: 1px solid rgba($color-border, 0.8);
+  border: 1px solid rgba($color-border, 0.7);
   border-radius: $radius-md;
   background: rgba($color-bg-card, 0.9);
   display: flex;
@@ -200,17 +275,17 @@
   transition: border-color $transition-fast, box-shadow $transition-fast, background $transition-fast;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   position: relative;
-  // Accent corner dot
+
   &::after {
     content: '';
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 4px;
+    right: 4px;
     width: 4px;
     height: 4px;
     border-radius: 50%;
     background: var(--app-color, #{$color-accent-cyan});
-    opacity: 0.7;
+    opacity: 0.65;
   }
 
   @include desktop {
@@ -227,23 +302,19 @@
   line-height: 1;
   filter: drop-shadow(0 0 8px var(--app-color, #{$color-accent-cyan}));
 
-  @include desktop {
-    font-size: $font-size-2xl;
-  }
+  @include desktop { font-size: $font-size-2xl; }
 }
 
 .icon__label {
   font-family: $font-mono;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   font-weight: 700;
   color: $color-text-muted;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: color $transition-fast;
 
-  @include desktop {
-    font-size: 0.6rem;
-  }
+  @include desktop { font-size: 0.58rem; }
 }
 
 // ── HINT ─────────────────────────────────────────────────────
@@ -253,10 +324,12 @@
   gap: $space-2;
   margin-top: $space-2;
   font-family: $font-mono;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: $color-text-muted;
-  opacity: 0.5;
+  opacity: 0.45;
   letter-spacing: 0.1em;
+  position: relative;
+  z-index: 1;
 
   @include desktop {
     font-size: $font-size-xs;
@@ -272,5 +345,5 @@
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50%       { opacity: 0; }
 }

@@ -7,6 +7,7 @@ const APP_TITLES: Record<AppId, string> = {
   projects: "PROJECTS.EXE",
   skills:   "SKILL_TREE.EXE",
   contact:  "CONNECT.EXE",
+  chatbot:  "CORPO//BOT.EXE",
 };
 
 interface OsWindowProps {
