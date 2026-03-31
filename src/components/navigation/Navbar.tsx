@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
@@ -15,6 +15,19 @@ interface NavbarProps {
 export default function Navbar({ dict, lang, onToggleLang }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Measure real navbar height and expose as CSS var
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const set = () =>
+      document.documentElement.style.setProperty("--navbar-h", el.offsetHeight + "px");
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 60);
@@ -31,6 +44,7 @@ export default function Navbar({ dict, lang, onToggleLang }: NavbarProps) {
 
   return (
     <header
+      ref={headerRef}
       className={`${styles["navbar"]} ${isScrolled ? styles["navbar--scrolled"] : ""}`}
     >
       <div className={styles["navbar__inner"]}>

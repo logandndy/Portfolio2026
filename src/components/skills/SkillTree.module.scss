@@ -2,427 +2,328 @@
 @use '../../styles/mixins' as *;
 
 // ============================================================
-// SKILL TREE — 2-panel desktop / tabs mobile, GSAP animated
+// SKILLS — Activity-Monitor OS style, mobile-first
 // ============================================================
 
-.skills-section {
+.section {
   position: relative;
   height: 100dvh;
   padding-top: var(--navbar-h);
   overflow: hidden;
   background: $color-bg-deep;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-
-  &__topline {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, $color-accent-violet, $color-accent-cyan, transparent);
-    opacity: 0.35;
-  }
 }
 
-// ── INNER WRAPPER ─────────────────────────────────────────────
-.skills-inner {
+.topline {
+  position: absolute;
+  top: var(--navbar-h);
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $color-accent-violet 30%, $color-accent-cyan 70%, transparent);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+// ── INNER ─────────────────────────────────────────────────────
+.inner {
   width: 100%;
   max-width: 1280px;
   height: calc(100dvh - var(--navbar-h));
-  padding: 0 $space-4;
+  padding: $space-4;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-4;
+  overflow: hidden;
 
   @include desktop {
-    padding: 0 $space-8;
-    gap: 0; // layout handles spacing
+    padding: $space-6 $space-8;
+    gap: $space-5;
   }
 }
 
-// ── MOBILE HEADER (hidden on desktop) ─────────────────────────
-.skills-mobile-header {
+// ── HEADER ROW ────────────────────────────────────────────────
+.header {
   flex-shrink: 0;
-
-  @include desktop {
-    display: none;
-  }
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-4;
 }
 
-// ── SHARED TEXT STYLES ─────────────────────────────────────────
-.skills-eyebrow {
+.header__left {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.eyebrow {
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-accent-violet;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  margin-bottom: $space-2;
   opacity: 0.85;
 }
 
-.skills-title {
+.title {
   font-family: $font-sans;
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
   font-weight: 800;
   color: $color-text-primary;
-  line-height: 1.1;
   letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-.skills-subtitle {
-  font-family: $font-sans;
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  line-height: 1.6;
-  margin-top: $space-3;
-  max-width: 260px;
+.header__stats {
+  display: flex;
+  gap: $space-4;
+  flex-shrink: 0;
 }
 
-// ── TWO-PANEL LAYOUT ──────────────────────────────────────────
-.skills-layout {
-  flex: 1;
-  min-height: 0;
+.stat {
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  align-items: flex-end;
+  gap: 2px;
 
-  @include desktop {
-    flex-direction: row;
-    gap: 0;
-    border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    overflow: hidden;
-    background: rgba($color-bg-card, 0.5);
-  }
-}
-
-// ══ LEFT NAV PANEL ════════════════════════════════════════════
-.skills-nav {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-
-  @include desktop {
-    width: 260px;
-    border-right: 1px solid $color-border;
-    padding: $space-8;
-    gap: $space-6;
-    background: rgba($color-bg-deep, 0.4);
-  }
-}
-
-// Desktop-only heading block
-.skills-nav__heading {
-  display: none;
-
-  @include desktop {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-// Category tab list
-.skills-nav__list {
-  display: flex;
-  flex-direction: row;
-  gap: $space-2;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: $space-1;
-
-  &::-webkit-scrollbar { display: none; }
-
-  @include desktop {
-    flex-direction: column;
-    gap: $space-1;
-    overflow-x: visible;
-    padding-bottom: 0;
-    margin-top: auto; // push to bottom of panel
-  }
-}
-
-// Single category tab
-.skills-nav__item {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-2 $space-3;
-  background: rgba($color-bg-surface, 0.5);
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  cursor: pointer;
-  font-family: $font-mono;
-  color: $color-text-muted;
-  transition: background $transition-fast, border-color $transition-fast;
-  white-space: nowrap;
-
-  @include desktop {
-    padding: $space-3 $space-4;
-    border-radius: $radius-sm;
-    width: 100%;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-  }
-
-  &:hover:not(&--active) {
-    background: rgba($color-bg-surface, 0.9);
-    border-color: rgba(255, 255, 255, 0.12);
-    color: $color-text-secondary;
-  }
-
-  &--active {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: var(--cat-color, #{$color-accent-cyan});
-    box-shadow: inset 3px 0 0 var(--cat-color, #{$color-accent-cyan});
+  &__num {
+    font-family: $font-mono;
+    font-size: $font-size-xl;
+    font-weight: 800;
     color: $color-text-primary;
+    line-height: 1;
+  }
+
+  &__label {
+    font-family: $font-mono;
+    font-size: 0.58rem;
+    color: $color-text-muted;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 }
 
-.skills-nav__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: $color-text-muted;
-  transition: background $transition-fast, box-shadow $transition-fast;
-}
-
-.skills-nav__label {
-  font-size: $font-size-xs;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  flex: 1;
-  text-align: left;
-}
-
-.skills-nav__count {
-  font-size: 0.62rem;
-  padding: 1px $space-2;
-  border: 1px solid $color-border;
-  border-radius: 100px;
-  letter-spacing: 0.08em;
-  color: $color-text-muted;
-  transition: color $transition-fast, border-color $transition-fast;
-}
-
-// ══ RIGHT CONTENT PANEL ═══════════════════════════════════════
-.skills-content {
-  flex: 1;
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-
-  @include desktop {
-    padding: $space-8;
-    gap: $space-6;
-    overflow: hidden;
-  }
-}
-
-.skills-content__header {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-4;
-}
-
-.skills-content__cat {
-  font-family: $font-mono;
-  font-size: $font-size-sm;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.skills-content__count {
-  font-family: $font-mono;
-  font-size: $font-size-xs;
-  color: $color-text-muted;
-  letter-spacing: 0.1em;
-}
-
-.skills-content__bar {
-  flex: 1;
-  height: 1px;
-  opacity: 0.5;
-  border-radius: 1px;
-}
-
-// ── SKILLS GRID ───────────────────────────────────────────────
-.skills-grid {
+// ── 2-COL GRID ────────────────────────────────────────────────
+.grid {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-4;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba($color-accent-cyan, 0.2) transparent;
   padding-right: $space-1;
-
-  @include desktop {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    align-content: start;
-    overflow-y: auto;
-  }
 
   &::-webkit-scrollbar { width: 3px; }
   &::-webkit-scrollbar-thumb {
     background: rgba($color-accent-cyan, 0.25);
     border-radius: 2px;
   }
-}
 
-// ══ SKILL NODE ════════════════════════════════════════════════
-.skill-node {
-  position: relative;
-  background: rgba($color-bg-card, 0.6);
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  padding: $space-4 $space-4 $space-4 $space-5;
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color $transition-fast, background $transition-fast, box-shadow $transition-fast;
-  will-change: transform;
-
-  &:hover, &--active {
-    border-color: var(--skill-color, #{$color-accent-cyan});
-    background: var(--skill-color-faint, rgba(0, 212, 255, 0.05));
-    box-shadow: 0 0 20px var(--skill-color-glow, rgba(0, 212, 255, 0.2));
+  @include desktop {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: min-content;
+    gap: $space-3 $space-8;
+    overflow-y: auto;
+    align-content: start;
   }
 }
 
-// Thick left accent bar
-.skill-node__accent {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--skill-color, #{$color-accent-cyan});
-  border-radius: $radius-sm 0 0 $radius-sm;
-  box-shadow: 0 0 10px var(--skill-color-glow, rgba(0, 212, 255, 0.4));
+// ── CATEGORY GROUP ────────────────────────────────────────────
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
 }
 
-// Main horizontal row: icon | center | meta
-.skill-node__row {
+.group__header {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
+  margin-bottom: $space-2;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid rgba($color-border, 0.7);
 }
 
-// Icon badge
-.skill-node__icon {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid;
+.group__icon {
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--cat-color, #{$color-accent-cyan});
+  letter-spacing: 0.06em;
+  padding: 2px $space-2;
+  border: 1px solid var(--cat-color, #{$color-accent-cyan});
   border-radius: $radius-sm;
+  opacity: 0.8;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+}
+
+.group__label {
   font-family: $font-mono;
   font-size: $font-size-xs;
   font-weight: 700;
-  letter-spacing: 0;
-  background: rgba($color-bg-deep, 0.6);
-  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cat-color, #{$color-accent-cyan});
+  opacity: 0.9;
+}
 
-  @include desktop {
-    width: 44px;
-    height: 44px;
-    font-size: $font-size-sm;
+.group__count {
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  color: $color-text-muted;
+  margin-left: $space-1;
+}
+
+.group__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cat-color, #{$color-accent-cyan}), transparent);
+  opacity: 0.2;
+}
+
+// ── SKILL NODE ────────────────────────────────────────────────
+.node {
+  border-radius: $radius-sm;
+  overflow: hidden;
+  transition: background $transition-fast;
+
+  &:hover,
+  &--open {
+    background: var(--skill-faint, rgba(0, 212, 255, 0.05));
   }
 }
 
-// Center: name + bar
-.skill-node__center {
-  flex: 1;
-  min-width: 0;
+.node__row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: $space-2;
+  padding: $space-2 $space-3;
+  cursor: pointer;
+  user-select: none;
+  min-height: 40px;
+
+  @include desktop {
+    gap: $space-3;
+    padding: $space-2 $space-4;
+  }
 }
 
-.skill-node__name {
-  font-family: $font-sans;
-  font-size: $font-size-base;
+// Accent dot
+.node__dot {
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+// Icon
+.node__icon {
+  flex-shrink: 0;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
   font-weight: 700;
+  width: 24px;
+  text-align: center;
+  line-height: 1;
+
+  @include desktop {
+    font-size: $font-size-sm;
+    width: 28px;
+  }
+}
+
+// Name
+.node__name {
+  flex-shrink: 0;
+  width: 110px;
+  font-family: $font-sans;
+  font-size: $font-size-sm;
+  font-weight: 600;
   color: $color-text-primary;
   letter-spacing: -0.01em;
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
   @include desktop {
-    font-size: $font-size-md;
+    width: 130px;
+    font-size: $font-size-base;
   }
 }
 
 // Progress track
-.skill-node__track {
-  height: 4px;
-  background: rgba($color-bg-surface, 0.8);
+.node__track {
+  flex: 1;
+  min-width: 0;
+  height: 3px;
+  background: rgba($color-bg-surface, 0.9);
   border-radius: 2px;
   overflow: hidden;
 }
 
-.skill-node__bar {
+.node__bar {
   height: 100%;
   border-radius: 2px;
-  // width & colors set via inline style
-  // scaleX animated via GSAP from parent
   transform-origin: left center;
 }
 
-// Right meta block
-.skill-node__meta {
+// Level label
+.node__level {
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
-}
-
-.skill-node__level {
   font-family: $font-mono;
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  white-space: nowrap;
+  display: none;
+
+  @include desktop { display: block; }
 }
 
-.skill-node__pct {
+// Percentage
+.node__pct {
+  flex-shrink: 0;
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-text-muted;
-  letter-spacing: 0.06em;
+  width: 32px;
+  text-align: right;
+}
+
+// Chevron
+.node__chevron {
+  flex-shrink: 0;
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  line-height: 1;
+  display: inline-block;
+  transition: transform $transition-fast, color $transition-fast;
+
+  &--open {
+    transform: rotate(90deg);
+    color: var(--skill-color, #{$color-accent-cyan});
+  }
 }
 
 // Expandable description
-.skill-node__detail {
-  // height & opacity animated by GSAP
-}
+.node__detail { overflow: hidden; }
 
-.skill-node__desc {
+.node__desc {
   font-family: $font-sans;
   font-size: $font-size-sm;
   color: $color-text-secondary;
   line-height: 1.65;
-  padding-top: $space-3;
-  border-top: 1px solid $color-border;
-  margin-top: $space-3;
+  padding: 0 $space-3 $space-3 calc(#{$space-2} + 5px + #{$space-2} + 24px + #{$space-2});
 
   @include desktop {
+    padding-left: calc(#{$space-3} + 5px + #{$space-3} + 28px + #{$space-3});
     font-size: $font-size-base;
   }
 }

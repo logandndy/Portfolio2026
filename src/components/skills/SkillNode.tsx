@@ -1,108 +1,107 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
 import type { Skill } from "@/data/skills";
 import styles from "./SkillTree.module.scss";
 
-const LEVEL_LABELS = ["—", "INIT", "LEARNING", "PROFICIENT", "ADVANCED", "MASTER"] as const;
+const LEVEL_LABEL = ["", "INIT", "LEARNING", "PROFICIENT", "ADVANCED", "MASTER"] as const;
 
 interface SkillNodeProps {
-  skill:      Skill;
-  dict:       Dictionary;
-  lang:       Lang;
-  index:      number;
-  isActive:   boolean;
-  onActivate: (s: Skill) => void;
+  skill:  Skill;
+  dict:   Dictionary;
+  lang:   Lang;
+  index:  number;
 }
 
-export default function SkillNode({ skill, lang, index, isActive, onActivate }: SkillNodeProps) {
-  const nodeRef   = useRef<HTMLDivElement>(null);
+export default function SkillNode({ skill, lang, index }: SkillNodeProps) {
+  const rowRef    = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
-  const prevActive = useRef(false);
+  const [open, setOpen] = useState(false);
 
-  // Expand/collapse detail on isActive change
-  if (prevActive.current !== isActive && detailRef.current) {
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
     const el = detailRef.current;
-    if (isActive) {
+    if (!el) return;
+    if (next) {
       gsap.fromTo(el,
         { height: 0, opacity: 0 },
-        { height: "auto", opacity: 1, duration: 0.32, ease: "power3.out" }
+        { height: "auto", opacity: 1, duration: 0.28, ease: "power3.out" }
       );
     } else {
-      gsap.to(el, { height: 0, opacity: 0, duration: 0.22, ease: "power2.in" });
+      gsap.to(el, { height: 0, opacity: 0, duration: 0.2, ease: "power2.in" });
     }
-    prevActive.current = isActive;
-  }
-
-  const handleMouseEnter = () => {
-    gsap.to(nodeRef.current, { y: -3, duration: 0.22, ease: "power2.out", overwrite: "auto" });
-  };
-  const handleMouseLeave = () => {
-    gsap.to(nodeRef.current, { y: 0, duration: 0.35, ease: "power3.out", overwrite: "auto" });
   };
 
-  const pct         = (skill.level / 5) * 100;
-  const levelLabel  = LEVEL_LABELS[skill.level];
-  const description = lang === "fr" ? skill.descriptionFr : skill.descriptionEn;
+  const handleEnter = () =>
+    gsap.to(rowRef.current, { x: 4, duration: 0.18, ease: "power2.out", overwrite: "auto" });
+  const handleLeave = () =>
+    gsap.to(rowRef.current, { x: 0, duration: 0.3, ease: "power3.out", overwrite: "auto" });
+
+  const pct  = Math.round((skill.level / 5) * 100);
+  const desc = lang === "fr" ? skill.descriptionFr : skill.descriptionEn;
 
   return (
     <div
-      ref={nodeRef}
-      data-node
-      className={`${styles["skill-node"]} ${isActive ? styles["skill-node--active"] : ""}`}
-      style={{
-        "--skill-color":      skill.color,
-        "--skill-color-faint": `${skill.color}18`,
-        "--skill-color-glow":  `${skill.color}50`,
-      } as React.CSSProperties}
-      onClick={() => onActivate(skill)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onActivate(skill)}
-      aria-expanded={isActive}
+      data-row
+      className={`${styles.node} ${open ? styles["node--open"] : ""}`}
+      style={{ "--skill-color": skill.color, "--skill-faint": `${skill.color}14` } as React.CSSProperties}
     >
-      {/* Left accent */}
-      <div className={styles["skill-node__accent"]} />
-
       {/* Main row */}
-      <div className={styles["skill-node__row"]}>
-        {/* Icon badge */}
-        <div className={styles["skill-node__icon"]} style={{ borderColor: `${skill.color}70`, color: skill.color }}>
+      <div
+        ref={rowRef}
+        className={styles["node__row"]}
+        onClick={toggle}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        tabIndex={0}
+        role="button"
+        aria-expanded={open}
+        onKeyDown={(e) => e.key === "Enter" && toggle()}
+      >
+        {/* Accent dot */}
+        <span
+          className={styles["node__dot"]}
+          style={{ background: skill.color, boxShadow: `0 0 6px ${skill.color}` }}
+        />
+
+        {/* Icon */}
+        <span className={styles["node__icon"]} style={{ color: skill.color }}>
           {skill.icon}
+        </span>
+
+        {/* Name */}
+        <span className={styles["node__name"]}>{skill.name}</span>
+
+        {/* Progress bar */}
+        <div className={styles["node__track"]}>
+          <div
+            data-bar
+            className={styles["node__bar"]}
+            style={{ width: `${pct}%`, background: skill.color }}
+          />
         </div>
 
-        {/* Name + bar */}
-        <div className={styles["skill-node__center"]}>
-          <div className={styles["skill-node__name"]}>{skill.name}</div>
-          <div className={styles["skill-node__track"]}>
-            <div
-              data-bar
-              className={styles["skill-node__bar"]}
-              style={{
-                width: `${pct}%`,
-                background: skill.color,
-                boxShadow: `0 0 8px ${skill.color}70`,
-              }}
-            />
-          </div>
-        </div>
+        {/* Level + pct */}
+        <span className={styles["node__level"]} style={{ color: skill.color }}>
+          {LEVEL_LABEL[skill.level]}
+        </span>
+        <span className={styles["node__pct"]}>{pct}%</span>
 
-        {/* Level label + index */}
-        <div className={styles["skill-node__meta"]}>
-          <span className={styles["skill-node__level"]} style={{ color: skill.color }}>
-            {levelLabel}
-          </span>
-          <span className={styles["skill-node__pct"]}>{pct}%</span>
-        </div>
+        {/* Expand chevron */}
+        <span className={`${styles["node__chevron"]} ${open ? styles["node__chevron--open"] : ""}`}>›</span>
       </div>
 
       {/* Expandable description */}
-      <div ref={detailRef} className={styles["skill-node__detail"]} style={{ height: 0, overflow: "hidden", opacity: 0 }}>
-        <p className={styles["skill-node__desc"]}>{description}</p>
+      <div
+        ref={detailRef}
+        className={styles["node__detail"]}
+        style={{ height: 0, overflow: "hidden", opacity: 0 }}
+      >
+        <p className={styles["node__desc"]}>{desc}</p>
       </div>
     </div>
   );

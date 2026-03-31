@@ -8,14 +8,12 @@ import type { Lang } from "@/types";
 import type { Dictionary } from "@/lib/i18n";
 import Navbar from "@/components/navigation/Navbar";
 import HeroScene from "@/components/hero/HeroScene";
-import ProjectsSection from "@/components/projects/ProjectsSection";
-import SkillTree from "@/components/skills/SkillTree";
+import OsSection from "@/components/os/OsSection";
 import AIChatbot from "@/components/chatbot/AIChatbot";
-import ContactSection from "@/components/contact/ContactSection";
 import EasterEgg from "@/components/easter-egg/EasterEgg";
 import SectionTransition, { type SectionTransitionHandle } from "@/components/ui/SectionTransition";
 
-const SECTIONS = ["hero", "projects", "skills", "contact"];
+const SECTIONS = ["hero", "os"];
 
 interface HomePageProps {
   dict: Dictionary;
@@ -76,8 +74,9 @@ export default function HomePage({ dict: initialDict, lang: initialLang }: HomeP
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       const target = e.target as HTMLElement;
-      // Don't intercept events inside the chatbot overlay
+      // Don't intercept events inside chatbot or OS screen (apps have their own scroll)
       if (target.closest('[class*="chatbot-overlay"]') || target.closest('[class*="chatbot-window"]')) return;
+      if (target.closest('[data-os-screen]')) return;
       e.preventDefault();
       if (e.deltaY > 0) navigate(1);
       else navigate(-1);
@@ -90,6 +89,7 @@ export default function HomePage({ dict: initialDict, lang: initialLang }: HomeP
     const handleTouchEnd = (e: TouchEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('[class*="chatbot"]')) return;
+      if (target.closest('[data-os-screen]')) return;
       const dy = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(dy) > 55) navigate(dy > 0 ? 1 : -1);
     };
@@ -122,9 +122,7 @@ export default function HomePage({ dict: initialDict, lang: initialLang }: HomeP
           lang={lang}
           onChatOpen={() => setChatbotTrigger((t) => t + 1)}
         />
-        <ProjectsSection dict={dict} lang={lang} />
-        <SkillTree dict={dict} lang={lang} />
-        <ContactSection dict={dict} lang={lang} />
+        <OsSection dict={dict} lang={lang} />
       </main>
 
       <AIChatbot dict={dict} lang={lang} openTrigger={chatbotTrigger} />

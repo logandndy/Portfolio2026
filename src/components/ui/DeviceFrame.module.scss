@@ -1,0 +1,148 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// DEVICE FRAME — purely decorative fixed overlay
+// ============================================================
+
+// ── Outer shell ──────────────────────────────────────────────
+.device {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: $z-navbar - 1; // below navbar, above sections
+}
+
+// ── Corner L-brackets ────────────────────────────────────────
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  opacity: 0.55;
+
+  &--tl {
+    top: 8px;
+    left: 8px;
+    border-top: 1.5px solid $color-accent-cyan;
+    border-left: 1.5px solid $color-accent-cyan;
+    border-radius: 1px 0 0 0;
+    box-shadow: -2px -2px 6px rgba($color-accent-cyan, 0.3);
+  }
+  &--tr {
+    top: 8px;
+    right: 8px;
+    border-top: 1.5px solid $color-accent-cyan;
+    border-right: 1.5px solid $color-accent-cyan;
+    border-radius: 0 1px 0 0;
+    box-shadow: 2px -2px 6px rgba($color-accent-cyan, 0.3);
+  }
+  &--bl {
+    bottom: 8px;
+    left: 8px;
+    border-bottom: 1.5px solid $color-accent-cyan;
+    border-left: 1.5px solid $color-accent-cyan;
+    border-radius: 0 0 0 1px;
+    box-shadow: -2px 2px 6px rgba($color-accent-cyan, 0.3);
+  }
+  &--br {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 1.5px solid $color-accent-cyan;
+    border-right: 1.5px solid $color-accent-cyan;
+    border-radius: 0 0 1px 0;
+    box-shadow: 2px 2px 6px rgba($color-accent-cyan, 0.3);
+  }
+
+  // Tighter corners on mobile
+  @include mobile {
+    width: 14px;
+    height: 14px;
+    top: unset;
+    right: unset;
+    bottom: unset;
+    left: unset;
+    opacity: 0.35;
+
+    &--tl { top: 6px; left: 6px; }
+    &--tr { top: 6px; right: 6px; }
+    &--bl { bottom: 6px; left: 6px; }
+    &--br { bottom: 6px; right: 6px; }
+  }
+}
+
+// ── Desktop status bar (bottom) ───────────────────────────────
+.statusbar {
+  display: none;
+
+  @include desktop {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 26px;
+    padding: 0 $space-5;
+    background: rgba($color-bg-deep, 0.92);
+    border-top: 1px solid rgba($color-accent-cyan, 0.12);
+    backdrop-filter: blur(8px);
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $color-accent-green;
+    box-shadow: 0 0 6px $color-accent-green;
+    flex-shrink: 0;
+  }
+
+  &__item {
+    font-family: $font-mono;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  &__sep {
+    color: $color-text-muted;
+    opacity: 0.2;
+    font-size: 0.6rem;
+  }
+
+  &__spacer { flex: 1; }
+}
+
+// ── Mobile notch (top center pill) ────────────────────────────
+.notch {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 5px;
+  background: rgba($color-accent-cyan, 0.12);
+  border-radius: 3px;
+  border: 1px solid rgba($color-accent-cyan, 0.18);
+
+  @include desktop { display: none; }
+}
+
+// ── Mobile home indicator (bottom center bar) ─────────────────
+.home-bar {
+  display: block;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: rgba($color-text-muted, 0.25);
+  border-radius: 2px;
+
+  @include desktop { display: none; }
+}

@@ -1,0 +1,276 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// ============================================================
+// CONTACT APP — inside OS window
+// ============================================================
+
+.app {
+  position: absolute;
+  inset: 0;
+  background: $color-bg-deep;
+  overflow: hidden;
+}
+
+.scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: $space-4;
+  scrollbar-width: thin;
+  scrollbar-color: rgba($color-accent-orange, 0.15) transparent;
+
+  &::-webkit-scrollbar { width: 2px; }
+  &::-webkit-scrollbar-thumb { background: rgba($color-accent-orange, 0.2); border-radius: 2px; }
+
+  @include desktop {
+    padding: $space-4 $space-6;
+    overflow-y: hidden;
+  }
+}
+
+// ── 2-COL BODY ────────────────────────────────────────────────
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  min-height: 100%;
+
+  @include desktop {
+    flex-direction: row;
+    gap: $space-8;
+    align-items: flex-start;
+  }
+}
+
+// ── FORM COLUMN ───────────────────────────────────────────────
+.formCol {
+  @include desktop { flex: 3; min-width: 0; }
+}
+
+.eyebrow {
+  font-family: $font-mono;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: $color-accent-orange;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: $space-1;
+
+  @include desktop { font-size: $font-size-xs; }
+}
+
+.title {
+  font-family: $font-sans;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+  color: $color-text-primary;
+  letter-spacing: -0.02em;
+  margin-bottom: $space-3;
+}
+
+// Form
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.label {
+  font-family: $font-mono;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+
+  @include desktop { font-size: $font-size-xs; }
+}
+
+// Input with scanline
+.inputWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: $radius-sm;
+
+  &--active .scanline {
+    opacity: 1;
+    animation: scanDown 0.45s ease-out forwards;
+  }
+}
+
+.scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, $color-accent-orange, transparent);
+  box-shadow: 0 0 8px $color-accent-orange;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+@keyframes scanDown {
+  0%   { top: -2px; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: rgba($color-bg-card, 0.9);
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  padding: $space-2 $space-3;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  outline: none;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  resize: none;
+
+  &::placeholder { color: $color-text-muted; opacity: 0.6; }
+  &:focus {
+    border-color: $color-accent-orange;
+    box-shadow: 0 0 0 2px rgba($color-accent-orange, 0.1), 0 0 12px rgba($color-accent-orange, 0.06);
+  }
+
+  @include desktop {
+    font-size: $font-size-sm;
+    padding: $space-2 $space-4;
+  }
+}
+
+.submit {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-4;
+  background: rgba($color-accent-orange, 0.06);
+  border: 1px solid $color-accent-orange;
+  color: $color-accent-orange;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  transition: background $transition-fast, box-shadow $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: rgba($color-accent-orange, 0.14);
+    box-shadow: 0 0 16px rgba($color-accent-orange, 0.25);
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &--success {
+    border-color: $color-accent-green;
+    color: $color-accent-green;
+    background: rgba($color-accent-green, 0.06);
+  }
+}
+
+.error {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: #ff4444;
+}
+
+// ── INFO COLUMN ───────────────────────────────────────────────
+.infoCol {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    flex: 2;
+    min-width: 0;
+  }
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba($color-bg-card, 0.7);
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: border-color $transition-fast, color $transition-fast, background $transition-fast;
+
+  &:hover {
+    border-color: rgba($color-accent-cyan, 0.4);
+    color: $color-accent-cyan;
+    background: rgba($color-accent-cyan, 0.04);
+  }
+
+  &__icon { color: $color-text-muted; flex-shrink: 0; width: 16px; text-align: center; }
+  &__arrow { margin-left: auto; opacity: 0.4; font-size: 0.8rem; }
+}
+
+.cvBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border: 1px solid rgba($color-accent-cyan, 0.4);
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: $color-accent-cyan;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  transition: background $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    background: rgba($color-accent-cyan, 0.07);
+    box-shadow: 0 0 12px rgba($color-accent-cyan, 0.18);
+  }
+}
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba($color-accent-violet, 0.04);
+  border: 1px solid rgba($color-accent-violet, 0.15);
+  border-radius: $radius-sm;
+
+  &__pre {
+    font-family: $font-mono;
+    font-size: $font-size-xs;
+    color: $color-accent-violet;
+    flex-shrink: 0;
+  }
+
+  span:last-child {
+    font-family: $font-mono;
+    font-size: $font-size-xs;
+    color: $color-accent-violet;
+    opacity: 0.65;
+    line-height: 1.5;
+  }
+}

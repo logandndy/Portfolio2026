@@ -1,0 +1,225 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// ============================================================
+// SKILLS APP — inside OS window
+// ============================================================
+
+.app {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: $color-bg-deep;
+  overflow: hidden;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: $space-3 $space-3;
+  scrollbar-width: thin;
+  scrollbar-color: rgba($color-accent-cyan, 0.18) transparent;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &::-webkit-scrollbar { width: 2px; }
+  &::-webkit-scrollbar-thumb { background: rgba($color-accent-cyan, 0.2); border-radius: 2px; }
+
+  @include desktop {
+    padding: $space-4 $space-5;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-3 $space-8;
+    align-content: start;
+  }
+}
+
+// ── CATEGORY GROUP ────────────────────────────────────────────
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.group__header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-2;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid rgba($color-border, 0.5);
+}
+
+.group__tag {
+  font-family: $font-mono;
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: var(--cat-color, #{$color-accent-cyan});
+  border: 1px solid var(--cat-color, #{$color-accent-cyan});
+  border-radius: $radius-sm;
+  padding: 1px $space-2;
+  letter-spacing: 0.06em;
+  clip-path: polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px));
+  opacity: 0.85;
+
+  @include desktop { font-size: $font-size-xs; }
+}
+
+.group__label {
+  font-family: $font-mono;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cat-color, #{$color-accent-cyan});
+  opacity: 0.85;
+
+  @include desktop { font-size: $font-size-xs; }
+}
+
+.group__count {
+  font-family: $font-mono;
+  font-size: 0.55rem;
+  color: $color-text-muted;
+}
+
+.group__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cat-color, #{$color-accent-cyan}), transparent);
+  opacity: 0.18;
+}
+
+// ── SKILL NODE ────────────────────────────────────────────────
+.node {
+  border-radius: $radius-sm;
+  overflow: hidden;
+  transition: background $transition-fast;
+
+  &:hover,
+  &--open {
+    background: rgba(var(--skill-color, #{$color-accent-cyan}), 0.05);
+  }
+}
+
+.node__row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-2;
+  cursor: pointer;
+  user-select: none;
+  min-height: 32px;
+
+  @include desktop {
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    min-height: 36px;
+  }
+}
+
+.node__dot {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.node__icon {
+  flex-shrink: 0;
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 20px;
+  text-align: center;
+
+  @include desktop {
+    font-size: $font-size-xs;
+    width: 22px;
+  }
+}
+
+.node__name {
+  flex-shrink: 0;
+  width: 90px;
+  font-family: $font-sans;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include desktop {
+    width: 110px;
+    font-size: $font-size-sm;
+  }
+}
+
+.node__track {
+  flex: 1;
+  min-width: 0;
+  height: 2px;
+  background: rgba($color-bg-surface, 0.9);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.node__bar {
+  height: 100%;
+  border-radius: 2px;
+  transform-origin: left center;
+}
+
+.node__level {
+  display: none;
+  font-family: $font-mono;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+  @include desktop {
+    display: block;
+    font-size: 0.55rem;
+  }
+}
+
+.node__pct {
+  flex-shrink: 0;
+  font-family: $font-mono;
+  font-size: 0.6rem;
+  color: $color-text-muted;
+  width: 28px;
+  text-align: right;
+}
+
+.node__chevron {
+  flex-shrink: 0;
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  line-height: 1;
+  display: inline-block;
+  transition: transform $transition-fast, color $transition-fast;
+
+  &--open {
+    transform: rotate(90deg);
+    color: var(--skill-color, #{$color-accent-cyan});
+  }
+}
+
+.node__desc {
+  font-family: $font-sans;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  padding: 0 $space-2 $space-2 calc(#{$space-2} + 4px + #{$space-2} + 20px + #{$space-2});
+
+  @include desktop {
+    padding-left: calc(#{$space-3} + 4px + #{$space-2} + 22px + #{$space-2});
+  }
+}

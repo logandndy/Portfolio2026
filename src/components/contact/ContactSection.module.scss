@@ -2,255 +2,371 @@
 @use '../../styles/mixins' as *;
 
 // ============================================================
-// CONTACT SECTION
+// CONTACT — compact 100dvh, pixel scan on focus, mobile-first
 // ============================================================
 
-.contact-section {
-  background: $color-bg-dark;
+.section {
   position: relative;
   height: 100dvh;
   padding-top: var(--navbar-h);
-  overflow-y: auto;
+  overflow: hidden;
+  background: $color-bg-dark;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, $color-accent-orange, transparent);
-    opacity: 0.4;
+.topline {
+  position: absolute;
+  top: var(--navbar-h);
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $color-accent-orange 40%, transparent);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+// ── INNER ─────────────────────────────────────────────────────
+.inner {
+  width: 100%;
+  max-width: 1280px;
+  height: calc(100dvh - var(--navbar-h));
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba($color-accent-orange, 0.2) transparent;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($color-accent-orange, 0.3);
+    border-radius: 2px;
+  }
+
+  @include desktop {
+    padding: $space-5 $space-8;
+    gap: $space-5;
+    overflow: hidden; // desktop fits in one screen
   }
 }
 
-.contact-section__inner {
-  @include section-layout;
-}
+// ── HEADER ────────────────────────────────────────────────────
+.header { flex-shrink: 0; }
 
-.contact-section__header {
-  margin-bottom: $space-16;
-}
-
-.contact-section__eyebrow {
+.eyebrow {
   font-family: $font-mono;
   font-size: $font-size-xs;
   color: $color-accent-orange;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  margin-bottom: $space-3;
+  margin-bottom: $space-1;
+  opacity: 0.85;
 }
 
-.contact-section__title {
+.title {
   font-family: $font-sans;
-  font-size: clamp(#{$font-size-2xl}, 5vw, #{$font-size-4xl});
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
   font-weight: 800;
   color: $color-text-primary;
-  margin-bottom: $space-4;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: $space-1;
 }
 
-.contact-section__subtitle {
+.subtitle {
   font-family: $font-sans;
-  font-size: $font-size-md;
+  font-size: $font-size-sm;
   color: $color-text-secondary;
-  max-width: 500px;
+  line-height: 1.5;
+  max-width: 360px;
 }
 
-// --- LAYOUT ---
-.contact-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: $space-16;
-  align-items: start;
-
-  @include tablet {
-    grid-template-columns: 1fr;
-    gap: $space-12;
-  }
-}
-
-// --- FORM ---
-.contact-form {
+// ── 2-COL BODY ────────────────────────────────────────────────
+.body {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: $space-6;
+
+  @include desktop {
+    flex-direction: row;
+    gap: $space-10;
+    align-items: flex-start;
+    overflow: hidden;
+  }
 }
 
-.contact-form__field {
+// ── FORM ──────────────────────────────────────────────────────
+.formWrap {
+  @include desktop { flex: 3; min-width: 0; }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.field {
   display: flex;
   flex-direction: column;
   gap: $space-2;
 }
 
-.contact-form__label {
+.label {
   font-family: $font-mono;
   font-size: $font-size-xs;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: $color-text-muted;
 }
 
-.contact-form__input,
-.contact-form__textarea {
-  background: $color-bg-card;
+// ── INPUT WRAP with pixel scan ────────────────────────────────
+.inputWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: $radius-sm;
+
+  // Default border via the input itself
+  // Pixel scan line — hidden by default
+  &__scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $color-accent-orange, transparent);
+    box-shadow: 0 0 8px $color-accent-orange;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+
+  &--active {
+    .inputWrap__scanline {
+      opacity: 1;
+      animation: scanDown 0.45s ease-out forwards;
+    }
+  }
+
+  &--area {
+    // taller wrapper for textarea — no extra styles needed
+  }
+}
+
+@keyframes scanDown {
+  0%   { top: -2px; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: rgba($color-bg-card, 0.9);
   border: 1px solid $color-border;
   border-radius: $radius-sm;
-  padding: $space-4;
+  padding: $space-3 $space-4;
   font-family: $font-mono;
   font-size: $font-size-sm;
   color: $color-text-primary;
   outline: none;
-  transition: border-color $transition-base, box-shadow $transition-base;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
   resize: none;
 
-  &::placeholder {
-    color: $color-text-muted;
-  }
+  &::placeholder { color: $color-text-muted; opacity: 0.6; }
 
   &:focus {
     border-color: $color-accent-orange;
-    box-shadow: 0 0 0 2px rgba($color-accent-orange, 0.1);
+    box-shadow: 0 0 0 2px rgba($color-accent-orange, 0.12), 0 0 16px rgba($color-accent-orange, 0.08);
+  }
+
+  @include desktop {
+    font-size: $font-size-base;
+    padding: $space-4;
   }
 }
 
-.contact-form__submit {
+// ── SUBMIT ────────────────────────────────────────────────────
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
   align-self: flex-start;
-  padding: $space-4 $space-10;
-  background: linear-gradient(135deg, $color-accent-orange, #e55b22);
-  border: none;
-  border-radius: $radius-sm;
-  @include cyber-clip;
+  padding: $space-3 $space-6;
+  background: rgba($color-accent-orange, 0.08);
+  border: 1px solid $color-accent-orange;
+  color: $color-accent-orange;
   font-family: $font-mono;
   font-size: $font-size-sm;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform $transition-fast, box-shadow $transition-base, filter $transition-base;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  transition: background $transition-fast, box-shadow $transition-fast;
 
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba($color-accent-orange, 0.4);
-    filter: brightness(1.1);
+    background: rgba($color-accent-orange, 0.15);
+    box-shadow: 0 0 20px rgba($color-accent-orange, 0.3);
   }
 
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &--success {
+    border-color: $color-accent-green;
+    color: $color-accent-green;
+    background: rgba($color-accent-green, 0.08);
+  }
+
+  &__arrow {
+    font-size: 1.1rem;
+    transition: transform $transition-fast;
+    .submit:hover:not(:disabled) & { transform: translateX(3px); }
   }
 }
 
-.contact-form__error {
+.error {
   font-family: $font-mono;
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   color: #ff4444;
 }
 
-// --- INFO SIDEBAR ---
-.contact-info {
+// ── RIGHT INFO ────────────────────────────────────────────────
+.info {
   display: flex;
   flex-direction: column;
   gap: $space-4;
-  padding: $space-8;
-  @include glass-card;
-}
 
-.contact-info__reach {
-  font-family: $font-mono;
-  font-size: $font-size-xs;
-  color: $color-text-muted;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: $space-2;
-}
-
-.contact-info__link {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  font-family: $font-mono;
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  padding: $space-3;
-  border: 1px solid $color-border;
-  border-radius: $radius-sm;
-  transition: color $transition-fast, border-color $transition-fast, background $transition-fast;
-
-  &:hover {
-    color: $color-accent-cyan;
-    border-color: rgba($color-accent-cyan, 0.4);
-    background: rgba($color-accent-cyan, 0.04);
+  @include desktop {
+    flex: 2;
+    min-width: 0;
+    gap: $space-5;
   }
 }
 
-.contact-info__link-icon {
+.info__label {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: $color-text-muted;
-  width: 20px;
-  text-align: center;
 }
 
-.contact-info__cv-download {
+.info__links {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.info__link {
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: $space-4 $space-6;
+  padding: $space-3 $space-4;
+  background: rgba($color-bg-card, 0.7);
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: border-color $transition-fast, color $transition-fast, background $transition-fast;
+
+  &:hover {
+    border-color: rgba($color-accent-cyan, 0.5);
+    color: $color-accent-cyan;
+    background: rgba($color-accent-cyan, 0.04);
+  }
+
+  &-icon {
+    color: $color-text-muted;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+  }
+
+  &-arrow {
+    margin-left: auto;
+    opacity: 0.5;
+    font-size: 0.9rem;
+  }
+}
+
+.info__cv {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-5;
   background: transparent;
-  border: 1px solid $color-border-active;
+  border: 1px solid rgba($color-accent-cyan, 0.4);
   border-radius: $radius-sm;
   font-family: $font-mono;
   font-size: $font-size-sm;
   font-weight: 600;
   color: $color-accent-cyan;
-  letter-spacing: 0.05em;
-  text-align: center;
-  justify-content: center;
-  margin-top: $space-2;
-  transition: background $transition-base, box-shadow $transition-base;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  transition: background $transition-fast, box-shadow $transition-fast;
 
   &:hover {
-    background: rgba($color-accent-cyan, 0.08);
-    box-shadow: 0 0 20px rgba($color-accent-cyan, 0.2);
+    background: rgba($color-accent-cyan, 0.07);
+    box-shadow: 0 0 16px rgba($color-accent-cyan, 0.2);
+  }
+
+  &-icon { font-size: 1rem; }
+}
+
+.info__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: rgba($color-accent-violet, 0.04);
+  border: 1px solid rgba($color-accent-violet, 0.18);
+  border-radius: $radius-sm;
+
+  &-pre {
+    font-family: $font-mono;
+    font-size: $font-size-xs;
+    color: $color-accent-violet;
+    flex-shrink: 0;
+  }
+
+  span:last-child {
+    font-family: $font-mono;
+    font-size: $font-size-xs;
+    color: $color-accent-violet;
+    opacity: 0.7;
+    line-height: 1.5;
   }
 }
 
-.contact-info__hint {
-  margin-top: $space-4;
-  padding: $space-3;
-  background: rgba($color-accent-violet, 0.05);
-  border: 1px solid rgba($color-accent-violet, 0.15);
-  border-radius: $radius-sm;
-}
-
-.contact-info__hint-text {
-  font-family: $font-mono;
-  font-size: 0.65rem;
-  color: $color-accent-violet;
-  opacity: 0.7;
-  letter-spacing: 0.05em;
-}
-
-// --- FOOTER ---
-.site-footer {
+// ── FOOTER ────────────────────────────────────────────────────
+.footer {
+  margin-top: auto;
+  padding-top: $space-4;
   border-top: 1px solid $color-border;
-  padding: $space-8;
-  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: $space-2;
-  align-items: center;
-}
+  gap: $space-1;
 
-.site-footer__text {
-  font-family: $font-mono;
-  font-size: $font-size-xs;
-  color: $color-text-muted;
-}
+  &__text {
+    font-family: $font-mono;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
 
-.site-footer__stack {
-  font-family: $font-mono;
-  font-size: 0.65rem;
-  color: $color-text-muted;
-  opacity: 0.5;
-  letter-spacing: 0.15em;
+    strong { color: $color-text-secondary; }
+  }
+
+  &__stack {
+    font-family: $font-mono;
+    font-size: 0.6rem;
+    color: $color-text-muted;
+    opacity: 0.45;
+    letter-spacing: 0.12em;
+  }
 }

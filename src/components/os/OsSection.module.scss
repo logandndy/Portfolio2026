@@ -1,0 +1,152 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ============================================================
+// OS SECTION — "computer inside a computer" concept
+// Mobile = phone SVG, Desktop = monitor SVG
+// ============================================================
+
+.section {
+  position: relative;
+  height: 100dvh;
+  padding-top: var(--navbar-h);
+  background: $color-bg-deep;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.topline {
+  position: absolute;
+  top: var(--navbar-h);
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $color-accent-cyan 30%, $color-accent-violet 70%, transparent);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+// Ambient background glow
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 60%, rgba($color-accent-cyan, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+// ── INNER ─────────────────────────────────────────────────────
+.inner {
+  width: 100%;
+  height: calc(100dvh - var(--navbar-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-2;
+
+  @include desktop {
+    padding: $space-4 $space-6;
+  }
+}
+
+// ── PHONE FRAME (mobile only) ─────────────────────────────────
+.frame-phone {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 400 / 820;
+  max-width: 100%;
+  // drop shadow for phone
+  filter: drop-shadow(0 0 24px rgba($color-accent-cyan, 0.18));
+
+  @include desktop {
+    display: none;
+  }
+}
+
+// ── MONITOR FRAME (desktop only) ─────────────────────────────
+.frame-monitor {
+  display: none;
+
+  @include desktop {
+    display: block;
+    position: relative;
+    height: 100%;
+    aspect-ratio: 1200 / 820;
+    max-width: 100%;
+    filter: drop-shadow(0 0 40px rgba($color-accent-cyan, 0.14));
+  }
+}
+
+.frame-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+// ── SCREEN OVERLAY — Phone ────────────────────────────────────
+// Phone viewBox 400×820, screen rect x=18 y=85 w=364 h=640
+.screen-phone {
+  position: absolute;
+  left:   calc(18 / 400 * 100%);   // 4.5%
+  top:    calc(85 / 820 * 100%);   // 10.366%
+  width:  calc(364 / 400 * 100%);  // 91%
+  height: calc(640 / 820 * 100%);  // 78.049%
+  overflow: hidden;
+  border-radius: 6px;
+  background: $color-bg-deep;
+  // CRT scanlines
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.06) 3px,
+      rgba(0, 0, 0, 0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+// ── SCREEN OVERLAY — Monitor ──────────────────────────────────
+// Monitor viewBox 1200×820, screen rect x=50 y=36 w=1100 h=608
+.screen-monitor {
+  position: absolute;
+  left:   calc(50 / 1200 * 100%);   // 4.1667%
+  top:    calc(36 / 820 * 100%);    // 4.3902%
+  width:  calc(1100 / 1200 * 100%); // 91.6667%
+  height: calc(608 / 820 * 100%);   // 74.1463%
+  overflow: hidden;
+  border-radius: 4px;
+  background: $color-bg-deep;
+  // CRT scanlines
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.05) 3px,
+      rgba(0, 0, 0, 0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+// ── SCREEN CONTENT WRAPPER ────────────────────────────────────
+.screen-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
