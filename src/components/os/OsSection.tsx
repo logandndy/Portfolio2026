@@ -19,9 +19,10 @@ interface OsSectionProps {
   dict: Dictionary;
   lang: Lang;
   onToggleLang: () => void;
+  onSecretFound: () => void;
 }
 
-export default function OsSection({ dict, lang, onToggleLang }: OsSectionProps) {
+export default function OsSection({ dict, lang, onToggleLang, onSecretFound }: OsSectionProps) {
   const [booted, setBooted]           = useState(false);
   const [activeApp, setActiveApp]     = useState<AppId | null>(null);
   const [chatTrigger, setChatTrigger] = useState(0);
@@ -68,7 +69,7 @@ export default function OsSection({ dict, lang, onToggleLang }: OsSectionProps) 
       {!booted ? (
         <OsBoot lang={lang} onEnter={handleBooted} />
       ) : activeApp === null ? (
-        <OsDesktop lang={lang} onOpen={openApp} onToggleLang={onToggleLang} />
+        <OsDesktop lang={lang} onOpen={openApp} onToggleLang={onToggleLang} onSecretFound={onSecretFound} />
       ) : (
         <OsWindow appId={activeApp} onClose={closeApp}>
           {activeApp === "projects" && <ProjectsApp dict={dict} lang={lang} />}

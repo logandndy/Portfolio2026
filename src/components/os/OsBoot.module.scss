@@ -119,7 +119,7 @@
   cursor: pointer;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
   transition: background $transition-fast, box-shadow $transition-fast;
-  // Starts invisible — GSAP animates in
+  opacity: 0; // Starts invisible — GSAP pixel-reveal animates in
 
   &:hover {
     background: rgba($color-accent-cyan, 0.16);

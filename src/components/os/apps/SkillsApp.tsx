@@ -7,6 +7,12 @@ import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
 import styles from "./SkillsApp.module.scss";
 
+const TIERS = [
+  { id: "S", label: "S", color: "#ff6b2b", levels: [5] as const },
+  { id: "A", label: "A", color: "#00ff88", levels: [4] as const },
+  { id: "B", label: "B", color: "#00d4ff", levels: [3] as const },
+] as const;
+
 const CAT_META: Record<SkillCategory, { tag: string; color: string }> = {
   frontend: { tag: "FE", color: "#00d4ff" },
   backend:  { tag: "BE", color: "#00ff88" },
@@ -119,6 +125,40 @@ export default function SkillsApp({ dict, lang }: SkillsAppProps) {
             </div>
           );
         })}
+
+        {/* ── TIER LIST — full-width row, extras only ── */}
+        <div className={styles.tierSection}>
+          <div className={styles.group__header} style={{ "--cat-color": "#ffffff" } as React.CSSProperties}>
+            <span className={styles.group__tag} style={{ borderColor: "#ffffff33", color: "#ffffff88" }}>◈</span>
+            <span className={styles.group__label} style={{ color: "#ffffff88" }}>TIER LIST</span>
+            <div className={styles.group__line} />
+          </div>
+          {TIERS.map(tier => {
+            const tierSkills = SKILLS.filter(
+              s => s.category === "extras" && (tier.levels as readonly number[]).includes(s.level)
+            );
+            if (!tierSkills.length) return null;
+            return (
+              <div key={tier.id} className={styles.tierRow}>
+                <span className={styles.tierLabel} style={{ color: tier.color, borderColor: tier.color }}>
+                  {tier.label}
+                </span>
+                <div className={styles.tierChips}>
+                  {tierSkills.map(s => (
+                    <span
+                      key={s.id}
+                      className={styles.tierChip}
+                      style={{ "--chip-color": s.color } as React.CSSProperties}
+                    >
+                      <span className={styles.tierChip__icon}>{s.icon}</span>
+                      {s.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

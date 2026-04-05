@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/types";
 import styles from "./OsDesktop.module.scss";
 
@@ -17,10 +17,21 @@ interface OsDesktopProps {
   lang: Lang;
   onOpen: (id: AppId) => void;
   onToggleLang: () => void;
+  onSecretFound: () => void;
 }
 
-export default function OsDesktop({ lang, onOpen, onToggleLang }: OsDesktopProps) {
+export default function OsDesktop({ lang, onOpen, onToggleLang, onSecretFound }: OsDesktopProps) {
   const [time, setTime] = useState("");
+  const clickTs = useRef<number[]>([]);
+
+  const handleBrandClick = () => {
+    const now = Date.now();
+    clickTs.current = [...clickTs.current, now].filter(t => now - t < 2500);
+    if (clickTs.current.length >= 5) {
+      clickTs.current = [];
+      onSecretFound();
+    }
+  };
 
   useEffect(() => {
     const tick = () => {
@@ -39,8 +50,8 @@ export default function OsDesktop({ lang, onOpen, onToggleLang }: OsDesktopProps
     <div className={styles.desktop}>
       {/* ── Taskbar ─────────────────────────────────────────── */}
       <div className={styles.taskbar}>
-        {/* Brand */}
-        <span className={styles.taskbar__brand}>
+        {/* Brand — secret: 5 rapid clicks */}
+        <span className={styles.taskbar__brand} onClick={handleBrandClick} role="button" aria-label="LD">
           <span className={styles.taskbar__brand_bracket}>&lt;</span>
           <span className={styles.taskbar__brand_text}>LD</span>
           <span className={styles.taskbar__brand_bracket}>/&gt;</span>

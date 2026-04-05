@@ -15,13 +15,13 @@ interface HomePageProps {
 
 export default function HomePage({ dict: _initialDict, lang: initialLang }: HomePageProps) {
   const { lang, toggle } = useLanguage(initialLang);
-  const { isTriggered: easterEggTriggered, reset: resetEasterEgg } = useEasterEgg();
+  const { isTriggered: easterEggTriggered, trigger: triggerEasterEgg, reset: resetEasterEgg } = useEasterEgg();
 
   const dict = getDictionary(lang);
 
   return (
     <>
-      <OsSection dict={dict} lang={lang} onToggleLang={toggle} />
+      <OsSection dict={dict} lang={lang} onToggleLang={toggle} onSecretFound={triggerEasterEgg} />
 
       {easterEggTriggered && (
         <EasterEgg dict={dict} lang={lang} onClose={resetEasterEgg} />

@@ -6,7 +6,6 @@ import gsap from "gsap";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import type { Dictionary } from "@/lib/i18n";
 import type { Lang } from "@/types";
-import dialogueData from "@/data/ai-dialogue.json";
 import styles from "./AIChatbot.module.scss";
 
 interface AIChatbotProps {
@@ -34,13 +33,37 @@ interface Particle {
 
 type Phase = "idle" | "opening" | "open" | "closing";
 
+interface HistoryEntry { role: "user" | "assistant"; content: string; }
+type ChatMode = "select" | "recruiter" | "project";
+
+const MODE_GREETING: Record<ChatMode, Record<string, string>> = {
+  select: { fr: "", en: "" },
+  recruiter: {
+    fr: "Mode entretien activé. Posez vos questions sur le profil, l'expérience ou les disponibilités de Logan.",
+    en: "Interview mode activated. Ask anything about Logan's profile, experience, or availability.",
+  },
+  project: {
+    fr: "Mode projet activé. Décrivez votre projet ou votre idée — je vous dirai comment Logan peut y contribuer.",
+    en: "Project mode activated. Describe your project or idea — I'll tell you how Logan can contribute.",
+  },
+};
+
 export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProps) {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: "greeting", role: "bot", text: dict.chatbot.greeting },
-  ]);
+  const [mode, setMode] = useState<ChatMode>("select");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [activeLines, setActiveLines] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const historyRef = useRef<HistoryEntry[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const selectMode = (m: "recruiter" | "project") => {
+    setMode(m);
+    setMessages([{ id: "greeting", role: "bot", text: MODE_GREETING[m][lang] }]);
+    historyRef.current = [];
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -64,8 +87,15 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
         text: line,
       }));
       setMessages((prev) => [...prev, ...newMessages]);
+      // Save full bot response to history
+      historyRef.current = [
+        ...historyRef.current,
+        { role: "assistant", content: activeLines.join("\n") },
+      ];
       setActiveLines([]);
       setIsTyping(false);
+      // Refocus input after bot responds
+      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isDone, activeLines]);
 
@@ -206,28 +236,42 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openTrigger]);
 
-  // ── Message handling ──
-  const handleQuestion = (questionIndex: number) => {
-    if (isTyping) return;
-    const question = dict.chatbot.questions[questionIndex];
-    const langSuffix = lang === "fr" ? "fr" : "en";
-    const keyMap: Record<number, string> = {
-      0: `availability_${langSuffix}`,
-      1: `why_hire_${langSuffix}`,
-      2: `stack_${langSuffix}`,
-      3: `remote_${langSuffix}`,
-      4: `ambitious_project_${langSuffix}`,
-      5: `salary_${langSuffix}`,
-    };
-    const responseKey = keyMap[questionIndex];
-    const response =
-      dialogueData.responses[responseKey as keyof typeof dialogueData.responses];
+  // ── Core send logic ──
+  const sendMessage = async (question: string) => {
+    if (!question.trim() || isTyping) return;
+
     setMessages((prev) => [
       ...prev,
       { id: `user-${Date.now()}`, role: "user", text: question },
     ]);
+    historyRef.current = [...historyRef.current, { role: "user", content: question }];
     setIsTyping(true);
-    setActiveLines(response?.lines ?? ["..."]);
+    setActiveLines([]);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, history: historyRef.current.slice(-10), mode }),
+      });
+      const data = await res.json() as { lines: string[] };
+      const lines = data.lines?.length ? data.lines : ["..."];
+      setActiveLines(lines);
+      // Will be added to history once typewriter finishes (see isDone effect)
+    } catch {
+      setActiveLines(lang === "fr"
+        ? ["Erreur de connexion. Réessayez."]
+        : ["Connection error. Please retry."]);
+    }
+  };
+
+  const handleQuestion = (questionIndex: number) => {
+    sendMessage(dict.chatbot.questions[questionIndex]);
+  };
+
+  const handleInputSend = () => {
+    sendMessage(inputValue);
+    setInputValue("");
   };
 
   const isVisible = phase !== "idle";
@@ -295,8 +339,47 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
                     </button>
                   </div>
 
+                  {/* Mode selection screen */}
+                  {mode === "select" && (
+                    <div className={styles["chatbot-mode-select"]}>
+                      <p className={styles["chatbot-mode-select__label"]}>
+                        {lang === "fr" ? "// CHOISISSEZ UN MODE" : "// SELECT A MODE"}
+                      </p>
+                      <button
+                        className={styles["chatbot-mode-btn"]}
+                        onClick={() => selectMode("recruiter")}
+                        data-color="cyan"
+                      >
+                        <span className={styles["chatbot-mode-btn__icon"]}>◈</span>
+                        <span className={styles["chatbot-mode-btn__title"]}>
+                          {lang === "fr" ? "Entretien recruteur" : "Recruiter interview"}
+                        </span>
+                        <span className={styles["chatbot-mode-btn__sub"]}>
+                          {lang === "fr"
+                            ? "Profil, compétences, disponibilités"
+                            : "Profile, skills, availability"}
+                        </span>
+                      </button>
+                      <button
+                        className={styles["chatbot-mode-btn"]}
+                        onClick={() => selectMode("project")}
+                        data-color="orange"
+                      >
+                        <span className={styles["chatbot-mode-btn__icon"]}>⬡</span>
+                        <span className={styles["chatbot-mode-btn__title"]}>
+                          {lang === "fr" ? "Parler d'un projet" : "Discuss a project"}
+                        </span>
+                        <span className={styles["chatbot-mode-btn__sub"]}>
+                          {lang === "fr"
+                            ? "Collaboration, idée, mission freelance"
+                            : "Collaboration, idea, freelance mission"}
+                        </span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Messages */}
-                  <div className={styles["chatbot-messages"]}>
+                  {mode !== "select" && <div className={styles["chatbot-messages"]}>
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
@@ -354,26 +437,51 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
                     )}
 
                     <div ref={messagesEndRef} />
-                  </div>
+                  </div>}
 
-                  {/* Quick questions */}
-                  <div className={styles["chatbot-questions"]}>
-                    <p className={styles["chatbot-questions__label"]}>
-                      {dict.chatbot.placeholder}
-                    </p>
-                    <div className={styles["chatbot-questions__list"]}>
-                      {dict.chatbot.questions.map((question, i) => (
-                        <button
-                          key={i}
-                          className={styles["chatbot-question-btn"]}
-                          onClick={() => handleQuestion(i)}
-                          disabled={isTyping}
-                        >
-                          {question}
-                        </button>
-                      ))}
+                  {/* Quick questions — recruiter mode only */}
+                  {mode === "recruiter" && (
+                    <div className={styles["chatbot-questions"]}>
+                      <p className={styles["chatbot-questions__label"]}>
+                        {dict.chatbot.placeholder}
+                      </p>
+                      <div className={styles["chatbot-questions__list"]}>
+                        {dict.chatbot.questions.map((question, i) => (
+                          <button
+                            key={i}
+                            className={styles["chatbot-question-btn"]}
+                            onClick={() => handleQuestion(i)}
+                            disabled={isTyping}
+                          >
+                            {question}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Free text input — both modes */}
+                  {mode !== "select" && <div className={styles["chatbot-input"]}>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      className={styles["chatbot-input__field"]}
+                      value={inputValue}
+                      onChange={e => setInputValue(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && handleInputSend()}
+                      placeholder={lang === "fr" ? "Posez une question..." : "Ask a question..."}
+                      disabled={isTyping}
+                      autoComplete="off"
+                    />
+                    <button
+                      className={styles["chatbot-input__send"]}
+                      onClick={handleInputSend}
+                      disabled={isTyping || !inputValue.trim()}
+                      aria-label="Send"
+                    >
+                      ↵
+                    </button>
+                  </div>}
                 </motion.div>
               )}
             </AnimatePresence>

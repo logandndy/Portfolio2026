@@ -14,28 +14,28 @@ interface Line {
 
 const LINES: Record<Lang, Line[]> = {
   en: [
-    { text: "> CORP-OS v2.7 — BOOT SEQUENCE",          color: "#00ff88", charDelay: 0.015, postDelay: 0.40 },
-    { text: "> HARDWARE CHECK.....................  OK", color: "#00ff88", charDelay: 0.012, postDelay: 0.20 },
-    { text: "",                                                            charDelay: 0,     postDelay: 0.20 },
-    { text: "> LOCATING PORTFOLIO FILES",                color: "#00d4ff", charDelay: 0.018, postDelay: 0.30 },
-    { text: "> USER ............  LOGAN DONDAY",         color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> TITLE ...........  SOFTWARE ENGINEER",    color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> LOCATION ........  FR · CH · CA",         color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> STATUS ..........  AVAILABLE ●",          color: "#00ff88", charDelay: 0.012, postDelay: 0.50 },
-    { text: "",                                                            charDelay: 0,     postDelay: 0.10 },
-    { text: "// ACCESS GRANTED. Welcome, recruiter.",    color: "#ff6b2b", charDelay: 0.022, postDelay: 0.00 },
+    { text: "> CORP-OS v2.7 — BOOT SEQUENCE",          color: "#00ff88", charDelay: 0.009, postDelay: 0.26 },
+    { text: "> HARDWARE CHECK.....................  OK", color: "#00ff88", charDelay: 0.007, postDelay: 0.13 },
+    { text: "",                                                            charDelay: 0,     postDelay: 0.13 },
+    { text: "> LOCATING PORTFOLIO FILES",                color: "#00d4ff", charDelay: 0.011, postDelay: 0.18 },
+    { text: "> USER ............  LOGAN DONDAY",         color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> TITLE ...........  SOFTWARE ENGINEER",    color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> LOCATION ........  FR · CH · CA",         color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> STATUS ..........  AVAILABLE ●",          color: "#00ff88", charDelay: 0.007, postDelay: 0.32 },
+    { text: "",                                                            charDelay: 0,     postDelay: 0.07 },
+    { text: "// ACCESS GRANTED. Welcome, recruiter.",    color: "#ff6b2b", charDelay: 0.014, postDelay: 0.00 },
   ],
   fr: [
-    { text: "> CORP-OS v2.7 — DÉMARRAGE",               color: "#00ff88", charDelay: 0.015, postDelay: 0.40 },
-    { text: "> VÉRIFICATION SYSTÈME..............  OK",  color: "#00ff88", charDelay: 0.012, postDelay: 0.20 },
-    { text: "",                                                            charDelay: 0,     postDelay: 0.20 },
-    { text: "> CHARGEMENT DES FICHIERS",                 color: "#00d4ff", charDelay: 0.018, postDelay: 0.30 },
-    { text: "> UTILISATEUR .....  LOGAN DONDAY",         color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> TITRE ...........  INGÉNIEUR LOGICIEL",   color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> LOCALISATION ....  FR · CH · CA",         color: "#e8edf2", charDelay: 0.012, postDelay: 0.10 },
-    { text: "> STATUT ..........  DISPONIBLE ●",         color: "#00ff88", charDelay: 0.012, postDelay: 0.50 },
-    { text: "",                                                            charDelay: 0,     postDelay: 0.10 },
-    { text: "// ACCÈS ACCORDÉ. Bienvenue, recruteur.",   color: "#ff6b2b", charDelay: 0.022, postDelay: 0.00 },
+    { text: "> CORP-OS v2.7 — DÉMARRAGE",               color: "#00ff88", charDelay: 0.009, postDelay: 0.26 },
+    { text: "> VÉRIFICATION SYSTÈME..............  OK",  color: "#00ff88", charDelay: 0.007, postDelay: 0.13 },
+    { text: "",                                                            charDelay: 0,     postDelay: 0.13 },
+    { text: "> CHARGEMENT DES FICHIERS",                 color: "#00d4ff", charDelay: 0.011, postDelay: 0.18 },
+    { text: "> UTILISATEUR .....  LOGAN DONDAY",         color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> TITRE ...........  INGÉNIEUR LOGICIEL",   color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> LOCALISATION ....  FR · CH · CA",         color: "#e8edf2", charDelay: 0.007, postDelay: 0.07 },
+    { text: "> STATUT ..........  DISPONIBLE ●",         color: "#00ff88", charDelay: 0.007, postDelay: 0.32 },
+    { text: "",                                                            charDelay: 0,     postDelay: 0.07 },
+    { text: "// ACCÈS ACCORDÉ. Bienvenue, recruteur.",   color: "#ff6b2b", charDelay: 0.014, postDelay: 0.00 },
   ],
 };
 
@@ -117,13 +117,23 @@ export default function OsBoot({ lang, onEnter }: OsBootProps) {
     };
   }, [lang]);
 
-  // ── Fade in ENTER button when done ────────────────────────
+  // ── Pixel-reveal ENTER button when done ──────────────────
   useEffect(() => {
     if (!typingDone) return;
+    // Step 1: pixel-dissolve reveal on the button
     gsap.fromTo(
-      [enterRef.current, hintRef.current],
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.45, stagger: 0.10, ease: "power2.out" }
+      enterRef.current,
+      { opacity: 0, filter: "blur(6px) contrast(3) saturate(0)", scale: 0.97 },
+      {
+        opacity: 1, filter: "blur(0px) contrast(1) saturate(1)", scale: 1,
+        duration: 0.55, ease: "steps(7)",
+      }
+    );
+    // Step 2: hint fades in right after
+    gsap.fromTo(
+      hintRef.current,
+      { opacity: 0, y: 6 },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", delay: 0.45 }
     );
   }, [typingDone]);
 

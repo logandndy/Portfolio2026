@@ -96,8 +96,7 @@ export default function EasterEgg({ dict, lang, onClose }: EasterEggProps) {
         >
           <div className={styles["easter-egg-modal__header"]}>
             <span className={styles["easter-egg-modal__code"]}>
-              {lang === "fr" ? "CODE SAISI : " : "CODE ENTERED: "}
-              <span className={styles["easter-egg-modal__code-value"]}>H-I-R-E</span>
+              {lang === "fr" ? "// SÉQUENCE DÉTECTÉE" : "// SEQUENCE DETECTED"}
             </span>
             <button
               className={styles["easter-egg-modal__close"]}

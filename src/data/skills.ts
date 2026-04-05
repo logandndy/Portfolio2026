@@ -1,4 +1,4 @@
-export type SkillCategory = "frontend" | "backend" | "3d_game" | "tools";
+export type SkillCategory = "frontend" | "backend" | "3d_game" | "tools" | "extras";
 export type SkillLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface Skill {
@@ -136,6 +136,63 @@ export const SKILLS: Skill[] = [
     requires: ["react"],
     descriptionFr: "3D déclaratif dans React, intégration Three.js.",
     descriptionEn: "Declarative 3D in React, Three.js integration.",
+  },
+  {
+    id: "api",
+    name: "API / REST",
+    category: "extras",
+    level: 4,
+    icon: "⇄",
+    color: "#00d4ff",
+    unlocked: true,
+    descriptionFr: "Conception et consommation d'APIs REST, authentification, webhooks.",
+    descriptionEn: "REST API design & consumption, authentication, webhooks.",
+  },
+  {
+    id: "automation",
+    name: "Automation",
+    category: "extras",
+    level: 3,
+    icon: "⚡",
+    color: "#f7df1e",
+    unlocked: true,
+    descriptionFr: "Automatisation de workflows, scripts, intégrations inter-outils.",
+    descriptionEn: "Workflow automation, scripting, cross-tool integrations.",
+  },
+  {
+    id: "n8n",
+    name: "n8n",
+    category: "extras",
+    level: 3,
+    icon: "n8",
+    color: "#ea4b71",
+    unlocked: true,
+    requires: ["automation"],
+    descriptionFr: "Orchestration de workflows no-code/low-code, self-hosted.",
+    descriptionEn: "No-code/low-code workflow orchestration, self-hosted.",
+  },
+  {
+    id: "make",
+    name: "Make",
+    category: "extras",
+    level: 3,
+    icon: "Mk",
+    color: "#6d4aff",
+    unlocked: true,
+    requires: ["automation"],
+    descriptionFr: "Automatisation visuelle de scénarios entre applications cloud.",
+    descriptionEn: "Visual scenario automation between cloud applications.",
+  },
+  {
+    id: "ai",
+    name: "IA / AI",
+    category: "extras",
+    level: 3,
+    icon: "◉",
+    color: "#00ff88",
+    unlocked: true,
+    descriptionFr: "Intégration d'APIs IA (OpenAI, Claude), prompt engineering, agents.",
+    descriptionEn: "AI API integration (OpenAI, Claude), prompt engineering, agents.",
   },
 ];
 

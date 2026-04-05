@@ -223,3 +223,72 @@
     padding-left: calc(#{$space-3} + 4px + #{$space-2} + 22px + #{$space-2});
   }
 }
+
+// ── TIER LIST SECTION ─────────────────────────────────────────
+.tierSection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  @include desktop {
+    grid-column: 1 / -1; // span both columns
+  }
+}
+
+.tierRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-1 0;
+}
+
+.tierLabel {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: 800;
+  border: 1px solid;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  background: rgba(0, 0, 0, 0.3);
+  letter-spacing: 0;
+}
+
+.tierChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1;
+  padding-top: 4px;
+}
+
+.tierChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px $space-2;
+  border: 1px solid rgba(var(--chip-color, #{$color-accent-cyan}), 0.35);
+  background: rgba(var(--chip-color, #{$color-accent-cyan}), 0.06);
+  color: var(--chip-color, #{$color-accent-cyan});
+  font-family: $font-mono;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  transition: background $transition-fast;
+
+  @include desktop { font-size: $font-size-xs; }
+
+  &:hover {
+    background: rgba(var(--chip-color, #{$color-accent-cyan}), 0.14);
+  }
+
+  &__icon {
+    opacity: 0.7;
+    font-size: 0.6em;
+  }
+}
