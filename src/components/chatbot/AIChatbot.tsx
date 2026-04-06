@@ -39,12 +39,12 @@ type ChatMode = "select" | "recruiter" | "project";
 const MODE_GREETING: Record<ChatMode, Record<string, string>> = {
   select: { fr: "", en: "" },
   recruiter: {
-    fr: "Mode entretien activé. Posez vos questions sur le profil, l'expérience ou les disponibilités de Logan.",
-    en: "Interview mode activated. Ask anything about Logan's profile, experience, or availability.",
+    fr: "Bonjour. Je suis Logan Donday. Posez-moi vos questions — sur mon parcours, mes compétences, mes dispo, ce que vous voulez.",
+    en: "Hey. I'm Logan Donday. Ask me anything — background, skills, availability, whatever you need to know.",
   },
   project: {
-    fr: "Mode projet activé. Décrivez votre projet ou votre idée — je vous dirai comment Logan peut y contribuer.",
-    en: "Project mode activated. Describe your project or idea — I'll tell you how Logan can contribute.",
+    fr: "Salut. Je suis Logan. Parlez-moi de votre projet — je vous dis direct ce que je peux apporter.",
+    en: "Hey. I'm Logan. Tell me about your project — I'll tell you straight what I can bring to the table.",
   },
 };
 
@@ -63,6 +63,14 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
     setMessages([{ id: "greeting", role: "bot", text: MODE_GREETING[m][lang] }]);
     historyRef.current = [];
     setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const backToSelect = () => {
+    setMode("select");
+    setMessages([]);
+    setActiveLines([]);
+    setIsTyping(false);
+    historyRef.current = [];
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -325,6 +333,15 @@ export default function AIChatbot({ dict, lang, openTrigger = 0 }: AIChatbotProp
                   {/* Header */}
                   <div className={styles["chatbot-header"]}>
                     <div className={styles["chatbot-header__info"]}>
+                      {mode !== "select" && (
+                        <button
+                          className={styles["chatbot-header__back"]}
+                          onClick={backToSelect}
+                          aria-label="Retour"
+                        >
+                          ←
+                        </button>
+                      )}
                       <span className={styles["chatbot-header__dot"]} />
                       <span className={styles["chatbot-header__title"]}>
                         {dict.chatbot.subtitle}

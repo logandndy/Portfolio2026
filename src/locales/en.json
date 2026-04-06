@@ -47,15 +47,14 @@
     "title": "AI Assistant",
     "subtitle": "CORPO-BOT v2.7",
     "placeholder": "Select a question...",
-    "greeting": "Hello. I'm Logan's virtual assistant. Ask me anything.",
+    "greeting": "Hey. I'm Logan Donday. Ask me anything.",
     "thinking": "Processing...",
     "questions": [
-      "What is your availability?",
-      "Why should I hire you?",
-      "What is your favourite stack?",
-      "Do you work remotely?",
-      "Tell me about your most ambitious project.",
-      "What are your salary expectations?"
+      "You actually built an AI that answers the phone for medical receptionists?",
+      "Front-end, UX, automation AND DevOps — you really do all that?",
+      "Why are you a profile they just can't find on the market?",
+      "How does working on aerospace projects as the sole frontend dev look?",
+      "Why does 5 years of remote-native work make you a better developer?"
     ]
   },
   "contact": {

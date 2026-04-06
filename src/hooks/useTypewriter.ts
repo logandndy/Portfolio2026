@@ -20,12 +20,18 @@ export function useTypewriter(lines: string[], options: TypewriterOptions = {}) 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!lines.length) return;
-
+    // Always reset on lines change — prevents stale isDone=true triggering
+    // the component's commit effect when the next response arrives
     setDisplayedLines([]);
     setCurrentLine("");
-    setIsTyping(true);
     setIsDone(false);
+
+    if (!lines.length) {
+      setIsTyping(false);
+      return;
+    }
+
+    setIsTyping(true);
     lineIndexRef.current = 0;
     charIndexRef.current = 0;
 

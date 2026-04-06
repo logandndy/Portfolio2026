@@ -47,15 +47,14 @@
     "title": "Assistant IA",
     "subtitle": "CORPO-BOT v2.7",
     "placeholder": "Sélectionnez une question...",
-    "greeting": "Bonjour. Je suis l'assistant virtuel de Logan. Posez-moi une question.",
+    "greeting": "Bonjour. Je suis Logan Donday. Posez-moi vos questions.",
     "thinking": "Traitement en cours...",
     "questions": [
-      "Quelles sont tes disponibilités ?",
-      "Pourquoi devrais-je t'embaucher ?",
-      "Quelle est ta stack préférée ?",
-      "Tu travailles en remote ?",
-      "Parle-moi de ton projet le plus ambitieux.",
-      "Quelles sont tes prétentions salariales ?"
+      "T'as vraiment créé une IA qui répond au téléphone à la place des secrétaires ?",
+      "Front-end, UX, automatisation ET DevOps — tu fais vraiment tout ça ?",
+      "Pourquoi t'es un profil qu'on trouve pas sur le marché ?",
+      "Comment tu travailles sur des projets aérospatiaux en alternance ?",
+      "Pourquoi 5 ans de remote font de toi un meilleur dev ?"
     ]
   },
   "contact": {
