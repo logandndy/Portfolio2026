@@ -275,6 +275,7 @@
   transition: border-color $transition-fast, box-shadow $transition-fast, background $transition-fast;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   position: relative;
+  overflow: hidden;
 
   &::after {
     content: '';
@@ -286,6 +287,7 @@
     border-radius: 50%;
     background: var(--app-color, #{$color-accent-cyan});
     opacity: 0.65;
+    z-index: 2;
   }
 
   @include desktop {
@@ -295,12 +297,24 @@
   }
 }
 
+// Pixel fragment canvas — sits beneath the glyph
+.icon__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .icon__glyph {
   font-family: $font-mono;
   font-size: $font-size-xl;
   color: var(--app-color, #{$color-accent-cyan});
   line-height: 1;
   filter: drop-shadow(0 0 8px var(--app-color, #{$color-accent-cyan}));
+  position: relative;
+  z-index: 1;
 
   @include desktop { font-size: $font-size-2xl; }
 }

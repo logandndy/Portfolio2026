@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { Lang } from "@/types";
 import styles from "./OsDesktop.module.scss";
 
@@ -13,6 +13,135 @@ const APPS: Array<{ id: AppId; glyph: string; color: string; labelFr: string; la
   { id: "chatbot",  glyph: ">_", color: "#e040fb", labelFr: "CORPO//BOT",   labelEn: "CORPO//BOT"},
 ];
 
+// ── Pixel fragment effect ─────────────────────────────────────
+interface PixelData {
+  bx: number;
+  by: number;
+  maxJitter: number;
+  alphaBase: number;
+  phase: number;
+  skipChance: number;
+}
+
+function parseHex(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+
+interface AppIconProps {
+  app: (typeof APPS)[number];
+  label: string;
+  onOpen: () => void;
+}
+
+function AppIcon({ app, label, onOpen }: AppIconProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const activeRef = useRef(false);
+  const pixelsRef = useRef<PixelData[]>([]);
+
+  const buildPixels = useCallback((W: number, H: number) => {
+    const BLOCK = 5;
+    const cols = Math.ceil(W / BLOCK);
+    const rows = Math.ceil(H / BLOCK);
+    const pixels: PixelData[] = [];
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        // Normalized distance from center (0 = center, 1 = corner)
+        const cx = (col + 0.5) / cols - 0.5;
+        const cy = (row + 0.5) / rows - 0.5;
+        const dist = Math.sqrt(cx * cx + cy * cy) * Math.SQRT2; // 0..1
+
+        pixels.push({
+          bx: col * BLOCK,
+          by: row * BLOCK,
+          // Center pixels are dense & stable, edges scatter harder
+          maxJitter: 1 + dist * 9,
+          alphaBase: 0.55 - dist * 0.35,
+          phase: Math.random() * Math.PI * 2,
+          // Edge pixels randomly absent for jagged fragmentation look
+          skipChance: dist > 0.55 ? 0.35 : 0,
+        });
+      }
+    }
+    return pixels;
+  }, []);
+
+  const startFragment = useCallback(() => {
+    if (activeRef.current) return;
+    activeRef.current = true;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.round(rect.width);
+    const H = Math.round(rect.height);
+    canvas.width = W;
+    canvas.height = H;
+
+    pixelsRef.current = buildPixels(W, H);
+
+    const ctx = canvas.getContext("2d")!;
+    const [r, g, b] = parseHex(app.color);
+    let frame = 0;
+
+    const draw = () => {
+      if (!activeRef.current) return;
+      ctx.clearRect(0, 0, W, H);
+      frame++;
+
+      for (const p of pixelsRef.current) {
+        // Randomly skip edge pixels each frame → jagged/fragmented border
+        if (p.skipChance > 0 && Math.random() < p.skipChance) continue;
+
+        // Jitter oscillates so pixels breathe in/out of their base position
+        const jitterAmp = p.maxJitter * (0.4 + 0.6 * Math.abs(Math.sin(frame * 0.12 + p.phase)));
+        const ox = (Math.random() - 0.5) * 2 * jitterAmp;
+        const oy = (Math.random() - 0.5) * 2 * jitterAmp;
+
+        // Alpha pulses independently per pixel
+        const alpha = Math.max(0, p.alphaBase * (0.6 + 0.4 * Math.sin(frame * 0.09 + p.phase)));
+
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.fillRect(p.bx + ox, p.by + oy, 4, 4);
+      }
+
+      rafRef.current = requestAnimationFrame(draw);
+    };
+
+    rafRef.current = requestAnimationFrame(draw);
+  }, [app.color, buildPixels]);
+
+  const stopFragment = useCallback(() => {
+    activeRef.current = false;
+    cancelAnimationFrame(rafRef.current);
+    const canvas = canvasRef.current;
+    if (canvas) canvas.getContext("2d")!.clearRect(0, 0, canvas.width, canvas.height);
+  }, []);
+
+  return (
+    <button
+      className={styles.icon}
+      style={{ "--app-color": app.color } as React.CSSProperties}
+      onClick={onOpen}
+      onMouseEnter={startFragment}
+      onMouseLeave={stopFragment}
+      onTouchStart={startFragment}
+      onTouchEnd={stopFragment}
+      aria-label={label}
+    >
+      <div className={styles.icon__box}>
+        <canvas ref={canvasRef} className={styles.icon__canvas} />
+        <span className={styles.icon__glyph}>{app.glyph}</span>
+      </div>
+      <span className={styles.icon__label}>{label}</span>
+    </button>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────
 interface OsDesktopProps {
   lang: Lang;
   onOpen: (id: AppId) => void;
@@ -50,7 +179,6 @@ export default function OsDesktop({ lang, onOpen, onToggleLang, onSecretFound }:
     <div className={styles.desktop}>
       {/* ── Taskbar ─────────────────────────────────────────── */}
       <div className={styles.taskbar}>
-        {/* Brand — secret: 5 rapid clicks */}
         <span className={styles.taskbar__brand} onClick={handleBrandClick} role="button" aria-label="LD">
           <span className={styles.taskbar__brand_bracket}>&lt;</span>
           <span className={styles.taskbar__brand_text}>LD</span>
@@ -59,7 +187,6 @@ export default function OsDesktop({ lang, onOpen, onToggleLang, onSecretFound }:
 
         <span className={styles.taskbar__dot} />
 
-        {/* Language toggle */}
         <div className={styles.taskbar__lang}>
           <button
             className={`${styles.taskbar__langBtn} ${lang === "fr" ? styles["taskbar__langBtn--active"] : ""}`}
@@ -74,7 +201,6 @@ export default function OsDesktop({ lang, onOpen, onToggleLang, onSecretFound }:
           >EN</button>
         </div>
 
-        {/* CV download */}
         <a
           href={`/cv/cv-${lang}.pdf`}
           download
@@ -103,20 +229,12 @@ export default function OsDesktop({ lang, onOpen, onToggleLang, onSecretFound }:
 
         <div className={styles.icons}>
           {APPS.map(app => (
-            <button
+            <AppIcon
               key={app.id}
-              className={styles.icon}
-              style={{ "--app-color": app.color } as React.CSSProperties}
-              onClick={() => onOpen(app.id)}
-              aria-label={lang === "fr" ? app.labelFr : app.labelEn}
-            >
-              <div className={styles.icon__box}>
-                <span className={styles.icon__glyph}>{app.glyph}</span>
-              </div>
-              <span className={styles.icon__label}>
-                {lang === "fr" ? app.labelFr : app.labelEn}
-              </span>
-            </button>
+              app={app}
+              label={lang === "fr" ? app.labelFr : app.labelEn}
+              onOpen={() => onOpen(app.id)}
+            />
           ))}
         </div>
 

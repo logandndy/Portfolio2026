@@ -18,6 +18,7 @@ const CAT_META: Record<SkillCategory, { tag: string; color: string }> = {
   backend:  { tag: "BE", color: "#00ff88" },
   "3d_game":{ tag: "3D", color: "#9b5de5" },
   tools:    { tag: "⚙",  color: "#ff6b2b" },
+  extras:   { tag: "AI", color: "#e040fb" },
 };
 
 interface SkillsAppProps {

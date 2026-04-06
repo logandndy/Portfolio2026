@@ -14,6 +14,7 @@ const CAT_ICON: Record<SkillCategory, string> = {
   backend:   "BE",
   "3d_game": "3D",
   tools:     "//",
+  extras:    "AI",
 };
 
 const CAT_COLOR: Record<SkillCategory, string> = {
@@ -21,6 +22,7 @@ const CAT_COLOR: Record<SkillCategory, string> = {
   backend:   "#68a063",
   "3d_game": "#00d4ff",
   tools:     "#ff6b2b",
+  extras:    "#e040fb",
 };
 
 interface SkillTreeProps {
